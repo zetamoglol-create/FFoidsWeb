@@ -333,6 +333,33 @@
     .landmark-all-good-wrap { margin-top: 0.5rem; }
     .landmark-all-good-wrap.hidden { display: none; }
     .landmark-all-good-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .analysis-loading-overlay { position: fixed; inset: 0; background: #0a0a0e; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .analysis-loading-overlay.hidden { display: none; }
+    .analysis-loading-card { max-width: 420px; width: 100%; text-align: center; }
+    .analysis-loading-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text); }
+    .analysis-loading-metric { font-size: 1rem; color: var(--accent); margin-bottom: 1.25rem; }
+    .analysis-loading-photos { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem; }
+    .analysis-photo-wrap { width: 100px; text-align: center; }
+    .analysis-photo-wrap img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2); display: block; margin: 0 auto 0.35rem; }
+    .analysis-photo-wrap span { font-size: 0.75rem; color: var(--textMuted); letter-spacing: 0.05em; }
+    .analysis-progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem; }
+    .analysis-progress-fill { height: 100%; background: var(--accent); border-radius: 3px; width: 0%; transition: width 0.3s ease; }
+    .analysis-progress-text { font-size: 0.85rem; color: var(--textMuted); }
+    .promo-card-wrap { margin-bottom: 2rem; }
+    .promo-card-wrap.hidden { display: none; }
+    .promo-card { background: linear-gradient(145deg, rgba(30,30,38,0.98), rgba(20,20,26,0.98)); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2rem; text-align: center; max-width: 420px; margin: 0 auto; }
+    .promo-score-main { font-size: 3.5rem; font-weight: 700; color: #4ade80; line-height: 1; margin-bottom: 0.5rem; }
+    .promo-score-main small { font-size: 1.25rem; color: var(--textMuted); font-weight: 500; }
+    .promo-photos { display: flex; gap: 1.25rem; justify-content: center; margin: 1.5rem 0; flex-wrap: wrap; }
+    .promo-photo-circle { width: 100px; text-align: center; position: relative; }
+    .promo-photo-circle img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid rgba(255,255,255,0.15); display: block; margin: 0 auto 0.25rem; }
+    .promo-photo-label { font-size: 0.7rem; color: var(--textMuted); letter-spacing: 0.08em; display: block; }
+    .promo-photo-score { font-size: 0.95rem; font-weight: 600; color: var(--text); display: block; margin-top: 0.2rem; }
+    .promo-stats { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+    .promo-stats span { font-size: 0.95rem; color: var(--textMuted); }
+    .promo-curve { display: block; margin: 0 auto 1rem; max-width: 100%; height: auto; border-radius: 8px; }
+    .btn-promo-download { margin-top: 0.5rem; background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.25rem; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: var(--font); font-size: 0.9rem; }
+    .btn-promo-download:hover { background: var(--accentDim); }
     .user-plan-info { font-size: 0.85rem; color: var(--textMuted); margin-bottom: 1rem; }
     .user-plan-info .user-email { color: var(--text); }
     .btn-logout { background: none; border: none; color: var(--accent); cursor: pointer; font-size: inherit; margin-left: 0.5rem; }
@@ -793,7 +820,35 @@
       </p>
     </section>
 
+    <div id="analysis-loading-overlay" class="analysis-loading-overlay hidden" aria-hidden="true">
+      <div class="analysis-loading-card">
+        <p class="analysis-loading-title" id="analysis-loading-title">Analyzing...</p>
+        <p class="analysis-loading-metric" id="analysis-loading-metric">Facial harmony</p>
+        <div class="analysis-loading-photos">
+          <div class="analysis-photo-wrap"><img id="analysis-load-front" alt="Front" /><span>FRONT</span></div>
+          <div class="analysis-photo-wrap"><img id="analysis-load-side" alt="Side" /><span>SIDE</span></div>
+        </div>
+        <div class="analysis-progress-bar"><div class="analysis-progress-fill" id="analysis-progress-fill"></div></div>
+        <p class="analysis-progress-text" id="analysis-progress-text">0 / 12</p>
+      </div>
+    </div>
+
     <section id="results-section" class="hidden">
+      <div id="promo-card-wrap" class="promo-card-wrap hidden">
+        <div class="promo-card" id="promo-card">
+          <div class="promo-score-main" id="promo-score-main">—</div>
+          <div class="promo-photos">
+            <div class="promo-photo-circle"><img id="promo-img-front" alt="Front" /><span class="promo-photo-label">FRONT</span><span class="promo-photo-score" id="promo-score-front">—</span></div>
+            <div class="promo-photo-circle"><img id="promo-img-side" alt="Side" /><span class="promo-photo-label">SIDE</span><span class="promo-photo-score" id="promo-score-side">—</span></div>
+          </div>
+          <div class="promo-stats">
+            <span id="promo-top-pct">—</span>
+            <span id="promo-one-in">—</span>
+          </div>
+          <canvas id="promo-curve" class="promo-curve" width="320" height="48"></canvas>
+          <button type="button" class="btn btn-promo-download" id="promo-download-btn">Download image</button>
+        </div>
+      </div>
       <h2 id="results-title">Vos résultats</h2>
       <div class="score-wrap">
         <div class="score-badge" id="score-badge">—</div>
@@ -909,8 +964,9 @@
   var STORAGE_USER = 'ffoids_user';
   var STORAGE_PROFILE = 'ffoids_profile';
 
-  function getCurrentProfile() { try { var j = localStorage.getItem(STORAGE_PROFILE); return j ? JSON.parse(j) : null; } catch (e) { return null; } }
-  function setCurrentProfile(profile) { try { localStorage.setItem(STORAGE_PROFILE, profile ? JSON.stringify(profile) : ''); } catch (e) {} }
+  function getProfileKey() { var u = getCurrentUser(); return (u && u.email) ? (STORAGE_PROFILE + '_' + u.email) : STORAGE_PROFILE; }
+  function getCurrentProfile() { try { var j = localStorage.getItem(getProfileKey()); return j ? JSON.parse(j) : null; } catch (e) { return null; } }
+  function setCurrentProfile(profile) { try { localStorage.setItem(getProfileKey(), profile ? JSON.stringify(profile) : ''); } catch (e) {} }
 
   var ETHNICITY_OPTIONS = [
     'East Asian', 'South Asian', 'Black / African', 'Hispanic', 'Middle Eastern', 'Native American', 'Pacific Islander', 'White / Caucasian'
@@ -1094,12 +1150,6 @@
         btn.id = 'google-btn-inner';
         google.accounts.id.renderButton(btn, { type: 'standard', size: 'large', text: 'signin_with', theme: 'filled_black' });
         div.appendChild(btn);
-        var originHint = document.createElement('p');
-        originHint.className = 'auth-modal-note';
-        originHint.style.marginTop = '0.75rem';
-        originHint.style.fontSize = '0.8rem';
-        originHint.innerHTML = (currentLang === 'fr' ? 'Origine de la page : ' : 'Page origin: ') + '<code style="word-break:break-all">' + origin + '</code>' + (currentLang === 'fr' ? ' — ajoute cette URL dans Google Cloud (Origines JS autorisées).' : ' — add this URL in Google Cloud (Authorized JavaScript origins).');
-        div.appendChild(originHint);
       } else {
         div.innerHTML = '<p class="auth-modal-note">' + (currentLang === 'fr' ? 'Configurez GOOGLE_CLIENT_ID dans le script (Google Cloud Console).' : 'Set GOOGLE_CLIENT_ID in the script (Google Cloud Console).') + '</p>' +
           '<p class="auth-modal-note"><button type="button" class="btn btn-secondary" id="auth-demo-btn">' + (currentLang === 'fr' ? 'Démo : continuer sans Google' : 'Demo: continue without Google') + '</button></p>';
@@ -1182,7 +1232,7 @@
       if (user && user.email) {
         authWrap.innerHTML = '<span class="user-email" style="font-size:0.9rem">' + (user.email || '') + '</span> <button type="button" class="btn btn-ghost" id="btn-logout">' + (t.navLogout || 'Log out') + '</button>';
         var logoutBtn = document.getElementById('btn-logout');
-        if (logoutBtn) logoutBtn.addEventListener('click', function() { setCurrentUser(null); setCurrentPlan('starter'); setCurrentProfile(null); updateUserUI(); renderPricingPlans(); });
+        if (logoutBtn) logoutBtn.addEventListener('click', function() { setCurrentUser(null); setCurrentPlan('starter'); updateUserUI(); renderPricingPlans(); });
       } else {
         authWrap.innerHTML = '<button type="button" class="btn btn-ghost" id="btn-register">' + (currentLang === 'fr' ? 'S\'inscrire' : 'Register') + '</button> <button type="button" class="btn btn-google" id="btn-login-google">' + (currentLang === 'fr' ? 'Connexion Google' : 'Login with Google') + '</button>';
         var reg = document.getElementById('btn-register');
@@ -1197,7 +1247,7 @@
   if (document.getElementById('user-plan-info')) updateUserUI();
   if (typeof showOnboardingIfNeeded === 'function') showOnboardingIfNeeded();
 
-  document.getElementById('nav-login').addEventListener('click', function(e) { e.preventDefault(); if (getCurrentUser() && getCurrentUser().email) { setCurrentUser(null); setCurrentPlan('starter'); setCurrentProfile(null); updateUserUI(); renderPricingPlans(); } else { showGoogleSignInModal(null, null); } });
+  document.getElementById('nav-login').addEventListener('click', function(e) { e.preventDefault(); if (getCurrentUser() && getCurrentUser().email) { setCurrentUser(null); setCurrentPlan('starter'); updateUserUI(); renderPricingPlans(); } else { showGoogleSignInModal(null, null); } });
   document.getElementById('btn-get-started').addEventListener('click', function() {
     var el = document.getElementById('upload-section');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -2245,30 +2295,128 @@
     if (which === 'front') state.stageFront = stage; else state.stageSide = stage;
   }
 
-  // ——— Analyze button (plan limits: starter = 10 ratios, no overall score, 2 strengths, 2 improvements) ———
-  function runAnalysis() {
-    var user = getCurrentUser();
-    if (!user || !user.email) {
-      showGoogleSignInModal(null, null);
-      var msg = document.getElementById('auth-modal-msg');
-      if (msg) msg.textContent = currentLang === 'fr' ? 'Connectez-vous avec Google pour lancer l\'analyse faciale.' : 'Sign in with Google to run the facial analysis.';
-      return;
+  var ANALYSIS_LOADING_STEPS = [
+    { en: 'Facial thirds', fr: 'Tiers du visage' },
+    { en: 'Facial fifths', fr: 'Cinquièmes du visage' },
+    { en: 'Nasolabial angle', fr: 'Angle naso-labial' },
+    { en: 'Nasofrontal angle', fr: 'Angle naso-frontal' },
+    { en: 'Jaw & chin', fr: 'Mâchoire et menton' },
+    { en: 'Eye spacing', fr: 'Écartement des yeux' },
+    { en: 'Lip ratios', fr: 'Ratios des lèvres' },
+    { en: 'Nose proportions', fr: 'Proportions du nez' },
+    { en: 'Facial symmetry', fr: 'Symétrie faciale' },
+    { en: 'Profile harmony', fr: 'Harmonie du profil' },
+    { en: 'Golden ratios', fr: 'Ratios d\'or' },
+    { en: 'Overall score', fr: 'Score global' }
+  ];
+
+  function drawPromoCurve(canvasEl, scoreOutOf10) {
+    if (!canvasEl || !canvasEl.getContext) return;
+    var ctx = canvasEl.getContext('2d');
+    var w = canvasEl.width, h = canvasEl.height;
+    ctx.clearRect(0, 0, w, h);
+    var pad = 4;
+    var x0 = pad, x1 = w - pad, y0 = pad, y1 = h - pad;
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.35)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (var x = 0; x <= w; x += 2) {
+      var t = (x - x0) / (x1 - x0);
+      var g = Math.exp(-Math.pow((t * 10 - 5), 2) / 4);
+      var y = y1 - g * (y1 - y0);
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
+    ctx.stroke();
+    var dotX = x0 + (scoreOutOf10 / 10) * (x1 - x0);
+    ctx.fillStyle = '#4ade80';
+    ctx.beginPath();
+    ctx.arc(dotX, y1 - 4, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function showPromoCard(scoreSur10, imgF, imgS) {
+    var wrap = document.getElementById('promo-card-wrap');
+    if (!wrap) return;
+    wrap.classList.remove('hidden');
+    var scoreMain = document.getElementById('promo-score-main');
+    var scoreFront = document.getElementById('promo-score-front');
+    var scoreSide = document.getElementById('promo-score-side');
+    var topPct = document.getElementById('promo-top-pct');
+    var oneIn = document.getElementById('promo-one-in');
+    var promoImgF = document.getElementById('promo-img-front');
+    var promoImgS = document.getElementById('promo-img-side');
+    var s = Number.isFinite(scoreSur10) ? scoreSur10 : 5;
+    if (scoreMain) scoreMain.innerHTML = s.toFixed(1) + ' <small>/ 10</small>';
+    if (scoreFront) scoreFront.textContent = s.toFixed(1);
+    if (scoreSide) scoreSide.textContent = s.toFixed(1);
+    if (promoImgF && imgF && imgF.src) promoImgF.src = imgF.src;
+    if (promoImgS && imgS && imgS.src) promoImgS.src = imgS.src;
+    var topPercent = Math.max(0.1, Math.min(99.9, 100 - s * 11.5));
+    var oneInN = Math.round(100 / topPercent);
+    if (oneInN < 2) oneInN = 2;
+    var isFr = (typeof currentLang !== 'undefined' && currentLang === 'fr');
+    if (topPct) topPct.textContent = (topPercent < 1 ? 'Top ' + topPercent.toFixed(1) : 'Top ' + Math.round(topPercent)) + '%';
+    if (oneIn) oneIn.textContent = '1 in ' + oneInN;
+    drawPromoCurve(document.getElementById('promo-curve'), s);
+    var btn = document.getElementById('promo-download-btn');
+    if (btn) {
+      btn.textContent = isFr ? 'Télécharger l\'image' : 'Download image';
+      btn.onclick = function() { exportPromoCard(scoreSur10, imgF, imgS, topPercent, oneInN); };
+    }
+  }
+
+  function exportPromoCard(scoreSur10, imgF, imgS, topPercent, oneInN) {
+    var c = document.createElement('canvas');
+    c.width = 420; c.height = 520;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#1a1a22';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#4ade80';
+    ctx.font = 'bold 48px system-ui, sans-serif';
+    var s = Number.isFinite(scoreSur10) ? scoreSur10.toFixed(1) : '—';
+    ctx.fillText(s + ' / 10', 210 - ctx.measureText(s + ' / 10').width / 2, 80);
+    var r = 50;
+    if (imgF && imgF.complete && imgF.naturalWidth) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(120, 180, r, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(imgF, 120 - r, 180 - r, r * 2, r * 2);
+      ctx.restore();
+    }
+    if (imgS && imgS.complete && imgS.naturalWidth) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(300, 180, r, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(imgS, 300 - r, 180 - r, r * 2, r * 2);
+      ctx.restore();
+    }
+    ctx.fillStyle = '#9a9894';
+    ctx.font = '12px system-ui, sans-serif';
+    ctx.fillText('FRONT', 120 - ctx.measureText('FRONT').width / 2, 250);
+    ctx.fillText('SIDE', 300 - ctx.measureText('SIDE').width / 2, 250);
+    ctx.fillStyle = '#e8e6e3';
+    ctx.font = '14px system-ui, sans-serif';
+    ctx.fillText('Top ' + (topPercent < 1 ? topPercent.toFixed(1) : Math.round(topPercent)) + '%', 210 - ctx.measureText('Top ' + (topPercent < 1 ? topPercent.toFixed(1) : Math.round(topPercent)) + '%').width / 2, 310);
+    ctx.fillText('1 in ' + oneInN, 210 - ctx.measureText('1 in ' + oneInN).width / 2, 335);
+    var link = document.createElement('a');
+    link.download = 'ffoids-score-' + s + '.png';
+    link.href = c.toDataURL('image/png');
+    link.click();
+  }
+
+  // ——— Analyze button (plan limits: starter = 10 ratios, no overall score, 2 strengths, 2 improvements) ———
+  function doRunAnalysis() {
     var plan = getCurrentPlan();
+    var promoWrap = document.getElementById('promo-card-wrap');
+    if (plan === 'starter' && promoWrap) promoWrap.classList.add('hidden');
     const lf = state.landmarksFront;
     const ls = state.landmarksSide;
     const imgF = state.imgFront;
     const imgS = state.imgSide;
-    var errEl = document.getElementById('upload-error');
-    if (!imgF || !state.imgSide) {
-      if (errEl) { errEl.textContent = currentLang === 'fr' ? 'Veuillez envoyer les deux photos (face et profil).' : 'Please upload both photos (front and side).'; errEl.classList.remove('hidden'); }
-      return;
-    }
-    if (!lf) {
-      if (errEl) { errEl.textContent = currentLang === 'fr' ? 'Attendez la détection des points du visage, ou utilisez une photo de face plus claire.' : 'Wait for face points to appear, or use a clearer front photo.'; errEl.classList.remove('hidden'); }
-      return;
-    }
-    if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
     const imgFW = imgF.width, imgFH = imgF.height;
     const imgSW = imgS ? imgS.width : 0, imgSH = imgS ? imgS.height : 0;
     const measurements = computeMeasurements(lf, ls, imgFW, imgFH, imgSW, imgSH);
@@ -2412,12 +2560,80 @@
     }
 
     document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+    if (plan === 'full' || plan === 'pro') showPromoCard(scoreSur10, imgF, imgS);
+  }
+
+  function runAnalysis() {
+    var user = getCurrentUser();
+    if (!user || !user.email) {
+      showGoogleSignInModal(null, null);
+      var msg = document.getElementById('auth-modal-msg');
+      if (msg) msg.textContent = currentLang === 'fr' ? 'Connectez-vous avec Google pour lancer l\'analyse faciale.' : 'Sign in with Google to run the facial analysis.';
+      return;
+    }
+    var plan = getCurrentPlan();
+    const lf = state.landmarksFront;
+    const ls = state.landmarksSide;
+    const imgF = state.imgFront;
+    const imgS = state.imgSide;
+    var errEl = document.getElementById('upload-error');
+    if (!imgF || !state.imgSide) {
+      if (errEl) { errEl.textContent = currentLang === 'fr' ? 'Veuillez envoyer les deux photos (face et profil).' : 'Please upload both photos (front and side).'; errEl.classList.remove('hidden'); }
+      return;
+    }
+    if (!lf) {
+      if (errEl) { errEl.textContent = currentLang === 'fr' ? 'Attendez la détection des points du visage, ou utilisez une photo de face plus claire.' : 'Wait for face points to appear, or use a clearer front photo.'; errEl.classList.remove('hidden'); }
+      return;
+    }
+    if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
+
+    if (plan === 'starter') {
+      doRunAnalysis();
+      return;
+    }
+    var overlay = document.getElementById('analysis-loading-overlay');
+    var titleEl = document.getElementById('analysis-loading-title');
+    var metricEl = document.getElementById('analysis-loading-metric');
+    var progressFill = document.getElementById('analysis-progress-fill');
+    var progressText = document.getElementById('analysis-progress-text');
+    var loadFront = document.getElementById('analysis-load-front');
+    var loadSide = document.getElementById('analysis-load-side');
+    var isFr = (typeof currentLang !== 'undefined' && currentLang === 'fr');
+    if (overlay) overlay.classList.remove('hidden');
+    if (titleEl) titleEl.textContent = isFr ? 'Analyse en cours...' : 'Analyzing...';
+    if (loadFront && imgF && imgF.src) loadFront.src = imgF.src;
+    if (loadSide && imgS && imgS.src) loadSide.src = imgS.src;
+    var steps = ANALYSIS_LOADING_STEPS;
+    var totalSteps = steps.length;
+    var step = 0;
+    var duration = 2200;
+    var stepDuration = duration / totalSteps;
+    var startTime = Date.now();
+    function tick() {
+      var elapsed = Date.now() - startTime;
+      if (elapsed >= duration) {
+        if (progressFill) progressFill.style.width = '100%';
+        if (progressText) progressText.textContent = totalSteps + ' / ' + totalSteps;
+        if (metricEl) metricEl.textContent = isFr ? steps[totalSteps - 1].fr : steps[totalSteps - 1].en;
+        doRunAnalysis();
+        if (overlay) overlay.classList.add('hidden');
+        return;
+      }
+      step = Math.min(totalSteps - 1, Math.floor((elapsed / duration) * totalSteps));
+      if (progressFill) progressFill.style.width = (100 * (step + 1) / totalSteps) + '%';
+      if (progressText) progressText.textContent = (step + 1) + ' / ' + totalSteps;
+      if (metricEl) metricEl.textContent = isFr ? steps[step].fr : steps[step].en;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 
   document.getElementById('btn-analyze').addEventListener('click', runAnalysis);
   document.getElementById('btn-back-upload').addEventListener('click', function() {
     document.getElementById('mapping-section').classList.add('hidden');
     document.getElementById('results-section').classList.add('hidden');
+    var promoWrap = document.getElementById('promo-card-wrap');
+    if (promoWrap) promoWrap.classList.add('hidden');
     state.landmarksFront = null;
     state.landmarksSide = undefined;
     state.landmarkConfirmStep = 'idle';
