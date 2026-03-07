@@ -347,19 +347,20 @@
     .analysis-progress-text { font-size: 0.85rem; color: var(--textMuted); }
     .promo-card-wrap { margin-bottom: 2rem; }
     .promo-card-wrap.hidden { display: none; }
-    .promo-card { background: linear-gradient(145deg, rgba(30,30,38,0.98), rgba(20,20,26,0.98)); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2rem; text-align: center; max-width: 420px; margin: 0 auto; }
-    .promo-score-main { font-size: 3.5rem; font-weight: 700; color: #4ade80; line-height: 1; margin-bottom: 0.5rem; }
-    .promo-score-main small { font-size: 1.25rem; color: var(--textMuted); font-weight: 500; }
-    .promo-photos { display: flex; gap: 1.25rem; justify-content: center; margin: 1.5rem 0; flex-wrap: wrap; }
-    .promo-photo-circle { width: 100px; text-align: center; position: relative; }
-    .promo-photo-circle img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid rgba(255,255,255,0.15); display: block; margin: 0 auto 0.25rem; }
-    .promo-photo-label { font-size: 0.7rem; color: var(--textMuted); letter-spacing: 0.08em; display: block; }
-    .promo-photo-score { font-size: 0.95rem; font-weight: 600; color: var(--text); display: block; margin-top: 0.2rem; }
-    .promo-stats { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
-    .promo-stats span { font-size: 0.95rem; color: var(--textMuted); }
-    .promo-curve { display: block; margin: 0 auto 1rem; max-width: 100%; height: auto; border-radius: 8px; }
-    .btn-promo-download { margin-top: 0.5rem; background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.25rem; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: var(--font); font-size: 0.9rem; }
-    .btn-promo-download:hover { background: var(--accentDim); }
+    .promo-card { background: linear-gradient(160deg, #1e1f24 0%, #16171b 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 24px; padding: 2.25rem; text-align: center; max-width: 440px; margin: 0 auto; box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6); }
+    .promo-score-main { font-size: 4rem; font-weight: 800; color: #4ade80; line-height: 1; margin-bottom: 0.25rem; letter-spacing: -0.03em; }
+    .promo-score-main small { font-size: 1.35rem; color: #9ca3af; font-weight: 500; margin-left: 2px; }
+    .promo-photos { display: flex; gap: 1.5rem; justify-content: center; margin: 1.75rem 0; flex-wrap: wrap; }
+    .promo-photo-circle { width: 110px; text-align: center; position: relative; }
+    .promo-photo-circle img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid rgba(255,255,255,0.12); display: block; margin: 0 auto 0.35rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .promo-photo-score { font-size: 1.35rem; font-weight: 700; color: #4ade80; display: block; margin-bottom: 0.15rem; }
+    .promo-photo-label { font-size: 0.7rem; color: #6b7280; letter-spacing: 0.12em; display: block; }
+    .promo-stats { display: flex; gap: 1.25rem; justify-content: center; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .promo-stats span { font-size: 1rem; color: #d1d5db; font-weight: 500; }
+    .promo-curve { display: block; margin: 0 auto 1.25rem; max-width: 100%; height: auto; border-radius: 10px; background: rgba(0,0,0,0.2); }
+    .promo-url { font-size: 0.9rem; color: #2dd4bf; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 1rem; }
+    .btn-promo-download { margin-top: 0.25rem; background: linear-gradient(135deg, #7c6ee8 0%, #5a4fb8 100%); color: #fff; border: none; padding: 0.7rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: var(--font); font-size: 0.9rem; box-shadow: 0 4px 14px rgba(124, 110, 232, 0.35); transition: transform 0.15s, box-shadow 0.15s; }
+    .btn-promo-download:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124, 110, 232, 0.45); }
     .user-plan-info { font-size: 0.85rem; color: var(--textMuted); margin-bottom: 1rem; }
     .user-plan-info .user-email { color: var(--text); }
     .btn-logout { background: none; border: none; color: var(--accent); cursor: pointer; font-size: inherit; margin-left: 0.5rem; }
@@ -838,14 +839,15 @@
         <div class="promo-card" id="promo-card">
           <div class="promo-score-main" id="promo-score-main">—</div>
           <div class="promo-photos">
-            <div class="promo-photo-circle"><img id="promo-img-front" alt="Front" /><span class="promo-photo-label">FRONT</span><span class="promo-photo-score" id="promo-score-front">—</span></div>
-            <div class="promo-photo-circle"><img id="promo-img-side" alt="Side" /><span class="promo-photo-label">SIDE</span><span class="promo-photo-score" id="promo-score-side">—</span></div>
+            <div class="promo-photo-circle"><img id="promo-img-front" alt="Front" /><span class="promo-photo-score" id="promo-score-front">—</span><span class="promo-photo-label">FRONT</span></div>
+            <div class="promo-photo-circle"><img id="promo-img-side" alt="Side" /><span class="promo-photo-score" id="promo-score-side">—</span><span class="promo-photo-label">SIDE</span></div>
           </div>
           <div class="promo-stats">
             <span id="promo-top-pct">—</span>
             <span id="promo-one-in">—</span>
           </div>
-          <canvas id="promo-curve" class="promo-curve" width="320" height="48"></canvas>
+          <canvas id="promo-curve" class="promo-curve" width="360" height="56"></canvas>
+          <p class="promo-url" id="promo-url"></p>
           <button type="button" class="btn btn-promo-download" id="promo-download-btn">Download image</button>
         </div>
       </div>
@@ -2322,23 +2324,51 @@
     var ctx = canvasEl.getContext('2d');
     var w = canvasEl.width, h = canvasEl.height;
     ctx.clearRect(0, 0, w, h);
-    var pad = 4;
-    var x0 = pad, x1 = w - pad, y0 = pad, y1 = h - pad;
-    ctx.strokeStyle = 'rgba(74, 222, 128, 0.35)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    for (var x = 0; x <= w; x += 2) {
+    var padX = 24, padY = 14;
+    var x0 = padX, x1 = w - padX, y0 = padY, y1 = h - padY;
+    var curveH = y1 - y0;
+    var pts = [];
+    for (var x = x0; x <= x1; x += 1) {
       var t = (x - x0) / (x1 - x0);
       var g = Math.exp(-Math.pow((t * 10 - 5), 2) / 4);
-      var y = y1 - g * (y1 - y0);
-      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      var y = y1 - g * curveH;
+      pts.push({ x: x, y: y });
     }
+    var grad = ctx.createLinearGradient(0, y0, 0, y1);
+    grad.addColorStop(0, 'rgba(74, 222, 128, 0.5)');
+    grad.addColorStop(1, 'rgba(74, 222, 128, 0.05)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, y1);
+    pts.forEach(function(p) { ctx.lineTo(p.x, p.y); });
+    ctx.lineTo(pts[pts.length - 1].x, y1);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.7)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
     ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x0, y1);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '10px system-ui, sans-serif';
+    ctx.fillText('1', x0 - 4, y1 + 12);
+    ctx.fillText('5', (x0 + x1) / 2 - 4, y1 + 12);
+    ctx.fillText('10', x1 - 10, y1 + 12);
     var dotX = x0 + (scoreOutOf10 / 10) * (x1 - x0);
     ctx.fillStyle = '#4ade80';
     ctx.beginPath();
-    ctx.arc(dotX, y1 - 4, 4, 0, Math.PI * 2);
+    ctx.arc(dotX, y1 - 2, 5, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
   }
 
   function showPromoCard(scoreSur10, imgF, imgS) {
@@ -2365,6 +2395,8 @@
     if (topPct) topPct.textContent = (topPercent < 1 ? 'Top ' + topPercent.toFixed(1) : 'Top ' + Math.round(topPercent)) + '%';
     if (oneIn) oneIn.textContent = '1 in ' + oneInN;
     drawPromoCurve(document.getElementById('promo-curve'), s);
+    var urlEl = document.getElementById('promo-url');
+    if (urlEl) urlEl.textContent = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'https://ffoidsweb.vercel.app';
     var btn = document.getElementById('promo-download-btn');
     if (btn) {
       btn.textContent = isFr ? 'Télécharger l\'image' : 'Download image';
@@ -2374,66 +2406,115 @@
 
   function exportPromoCard(scoreSur10, imgF, imgS, topPercent, oneInN) {
     var c = document.createElement('canvas');
-    c.width = 420;
-    c.height = 580;
+    c.width = 460;
+    c.height = 620;
     var ctx = c.getContext('2d');
-    ctx.fillStyle = '#1a1a22';
+    var scoreVal = Number.isFinite(scoreSur10) ? scoreSur10 : 5;
+    var s = scoreVal.toFixed(1);
+    var cardGrad = ctx.createLinearGradient(0, 0, 0, c.height);
+    cardGrad.addColorStop(0, '#1e1f24');
+    cardGrad.addColorStop(1, '#16171b');
+    ctx.fillStyle = cardGrad;
     ctx.fillRect(0, 0, c.width, c.height);
+    var cx = c.width / 2;
     ctx.fillStyle = '#4ade80';
-    ctx.font = 'bold 48px system-ui, sans-serif';
-    var s = Number.isFinite(scoreSur10) ? scoreSur10.toFixed(1) : '—';
-    ctx.fillText(s + ' / 10', 210 - ctx.measureText(s + ' / 10').width / 2, 80);
-    var r = 50;
+    ctx.font = 'bold 52px system-ui, sans-serif';
+    var scoreStr = s + ' / 10';
+    ctx.fillText(scoreStr, cx - ctx.measureText(scoreStr).width / 2, 105);
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '16px system-ui, sans-serif';
+    var r = 52;
+    var imgY = 175;
     if (imgF && imgF.complete && imgF.naturalWidth) {
       ctx.save();
       ctx.beginPath();
-      ctx.arc(120, 180, r, 0, Math.PI * 2);
+      ctx.arc(130, imgY, r, 0, Math.PI * 2);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(imgF, 120 - r, 180 - r, r * 2, r * 2);
+      ctx.drawImage(imgF, 130 - r, imgY - r, r * 2, r * 2);
       ctx.restore();
+      ctx.beginPath();
+      ctx.arc(130, imgY, r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
     if (imgS && imgS.complete && imgS.naturalWidth) {
       ctx.save();
       ctx.beginPath();
-      ctx.arc(300, 180, r, 0, Math.PI * 2);
+      ctx.arc(330, imgY, r, 0, Math.PI * 2);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(imgS, 300 - r, 180 - r, r * 2, r * 2);
+      ctx.drawImage(imgS, 330 - r, imgY - r, r * 2, r * 2);
       ctx.restore();
+      ctx.beginPath();
+      ctx.arc(330, imgY, r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
-    ctx.fillStyle = '#9a9894';
-    ctx.font = '12px system-ui, sans-serif';
-    ctx.fillText('FRONT', 120 - ctx.measureText('FRONT').width / 2, 250);
-    ctx.fillText('SIDE', 300 - ctx.measureText('SIDE').width / 2, 250);
-    ctx.fillStyle = '#e8e6e3';
-    ctx.font = '14px system-ui, sans-serif';
-    ctx.fillText('Top ' + (topPercent < 1 ? topPercent.toFixed(1) : Math.round(topPercent)) + '%', 210 - ctx.measureText('Top ' + (topPercent < 1 ? topPercent.toFixed(1) : Math.round(topPercent)) + '%').width / 2, 310);
-    ctx.fillText('1 in ' + oneInN, 210 - ctx.measureText('1 in ' + oneInN).width / 2, 335);
-    var curveY = 370;
-    var curveW = 380;
-    var curveH = 44;
+    ctx.fillStyle = '#4ade80';
+    ctx.font = 'bold 22px system-ui, sans-serif';
+    ctx.fillText(s, 130 - ctx.measureText(s).width / 2, imgY + r + 32);
+    ctx.fillText(s, 330 - ctx.measureText(s).width / 2, imgY + r + 32);
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.fillText('FRONT', 130 - ctx.measureText('FRONT').width / 2, imgY + r + 48);
+    ctx.fillText('SIDE', 330 - ctx.measureText('SIDE').width / 2, imgY + r + 48);
+    ctx.fillStyle = '#d1d5db';
+    ctx.font = '15px system-ui, sans-serif';
+    var topStr = 'Top ' + (topPercent < 1 ? topPercent.toFixed(1) : Math.round(topPercent)) + '%';
+    ctx.fillText(topStr + '  1 in ' + oneInN, cx - ctx.measureText(topStr + '  1 in ' + oneInN).width / 2, 315);
+    var curveY = 345;
+    var curveW = 400;
+    var curveH = 52;
     var cx0 = (c.width - curveW) / 2;
-    ctx.strokeStyle = 'rgba(74, 222, 128, 0.4)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    var scoreVal = Number.isFinite(scoreSur10) ? scoreSur10 : 5;
-    for (var x = 0; x <= curveW; x += 2) {
+    var pts = [];
+    for (var x = 0; x <= curveW; x += 1) {
       var t = x / curveW;
       var g = Math.exp(-Math.pow((t * 10 - 5), 2) / 4);
       var y = curveY + curveH - g * curveH;
-      if (x === 0) ctx.moveTo(cx0 + x, y); else ctx.lineTo(cx0 + x, y);
+      pts.push({ x: cx0 + x, y: y });
     }
+    var grad = ctx.createLinearGradient(0, curveY, 0, curveY + curveH);
+    grad.addColorStop(0, 'rgba(74, 222, 128, 0.45)');
+    grad.addColorStop(1, 'rgba(74, 222, 128, 0.02)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, curveY + curveH);
+    pts.forEach(function(p) { ctx.lineTo(p.x, p.y); });
+    ctx.lineTo(pts[pts.length - 1].x, curveY + curveH);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.75)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
     ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx0, curveY + curveH);
+    ctx.lineTo(cx0 + curveW, curveY + curveH);
+    ctx.stroke();
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.fillText('1', cx0 - 6, curveY + curveH + 16);
+    ctx.fillText('5', cx0 + curveW / 2 - 6, curveY + curveH + 16);
+    ctx.fillText('10', cx0 + curveW - 14, curveY + curveH + 16);
     var dotX = cx0 + (scoreVal / 10) * curveW;
     ctx.fillStyle = '#4ade80';
     ctx.beginPath();
-    ctx.arc(dotX, curveY + curveH - 4, 5, 0, Math.PI * 2);
+    ctx.arc(dotX, curveY + curveH - 2, 6, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
     var siteUrl = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'https://ffoidsweb.vercel.app';
-    ctx.fillStyle = '#6b7280';
-    ctx.font = '13px system-ui, sans-serif';
-    ctx.fillText(siteUrl, 210 - ctx.measureText(siteUrl).width / 2, 550);
+    ctx.fillStyle = '#2dd4bf';
+    ctx.font = 'bold 14px system-ui, sans-serif';
+    ctx.fillText(siteUrl, cx - ctx.measureText(siteUrl).width / 2, 585);
     var link = document.createElement('a');
     link.download = 'ffoids-score-' + s + '.png';
     link.href = c.toDataURL('image/png');
