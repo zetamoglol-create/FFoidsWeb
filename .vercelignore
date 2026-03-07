@@ -1,0 +1,3 @@
+# Servir uniquement facial-harmony-analysis.html à la racine (rewrite dans vercel.json)
+# Ainsi / affiche toujours la version avec GOOGLE_CLIENT_ID
+index.html
