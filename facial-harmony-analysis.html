@@ -291,6 +291,7 @@
     /* Auth modal */
     .auth-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .auth-modal-overlay.hidden { display: none; }
+    .onboarding-overlay-dark { background: #0a0a0e; }
     .auth-modal { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; max-width: 400px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); margin: auto; }
     .auth-modal h3 { margin-bottom: 0.75rem; }
     #auth-modal-msg { color: var(--textMuted); margin-bottom: 1rem; font-size: 0.95rem; }
@@ -426,6 +427,34 @@
     }
     .lang-switcher button:hover { color: var(--text); background: var(--surface2); }
     .lang-switcher button.active { color: var(--accent); border-color: var(--accent); background: rgba(124, 110, 232, 0.15); }
+    .site-header {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 0.75rem 0; margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .site-header-logo {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: var(--text); font-weight: 600; font-size: 1.15rem; text-decoration: none;
+      font-family: var(--font);
+    }
+    .site-header-logo svg { width: 28px; height: 28px; flex-shrink: 0; opacity: 0.95; }
+    .site-header-logo .header-logo-img { width: 28px; height: 28px; object-fit: contain; flex-shrink: 0; display: block; }
+    .site-header-nav {
+      display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap;
+    }
+    .site-header-nav a {
+      color: var(--textMuted); text-decoration: none; padding: 0.5rem 0.75rem;
+      border-radius: 8px; font-size: 0.95rem; font-family: var(--font);
+      transition: color 0.2s, background 0.2s;
+    }
+    .site-header-nav a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .site-header-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .btn-get-started {
+      padding: 0.5rem 1rem; border-radius: 8px; border: none;
+      background: var(--accent); color: #fff; font-weight: 600; font-size: 0.9rem;
+      font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-get-started:hover { background: var(--accentDim); }
     .top-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
     .auth-buttons { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
     .auth-buttons .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text); }
@@ -437,6 +466,9 @@
     /* Mobile: touch targets, safe area, layout */
     @media (max-width: 600px) {
       .container { padding: 1rem; padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+      .site-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+      .site-header-nav { justify-content: center; }
+      .site-header-right { justify-content: center; }
       .top-bar { flex-direction: column; align-items: stretch; gap: 0.5rem; }
       .top-bar .lang-switcher { justify-content: center; margin-bottom: 0; }
       .auth-buttons { justify-content: center; }
@@ -581,16 +613,29 @@
   </div>
   <div class="app-wrap">
   <div class="container">
-    <div class="top-bar">
-      <div class="lang-switcher" role="group" aria-label="Language">
-        <button type="button" id="lang-fr" data-lang="fr">FR</button>
-        <button type="button" id="lang-en" class="active" data-lang="en">EN</button>
+    <header class="site-header">
+      <a href="#" class="site-header-logo" id="header-logo" aria-label="FFoids">
+        <img id="header-logo-img" src="logo.png" alt="" class="header-logo-img" onerror="this.style.display='none'">
+        <span id="header-logo-text">FFoids</span>
+      </a>
+      <nav class="site-header-nav" aria-label="Main">
+        <a href="#how-it-works" id="nav-how">How it works</a>
+        <a href="#pricing-section" id="nav-plan">Your Plan</a>
+        <a href="#pricing-section" id="nav-pricing">Pricing</a>
+        <a href="#" id="nav-login">Login</a>
+      </nav>
+      <div class="site-header-right">
+        <div class="lang-switcher" role="group" aria-label="Language">
+          <button type="button" id="lang-fr" data-lang="fr">FR</button>
+          <button type="button" id="lang-en" class="active" data-lang="en">EN</button>
+        </div>
+        <button type="button" class="btn-get-started" id="btn-get-started">Get started</button>
+        <div class="auth-buttons hidden" id="auth-buttons-wrap">
+          <button type="button" class="btn btn-ghost" id="btn-register">Register</button>
+          <button type="button" class="btn btn-google" id="btn-login-google">Login with Google</button>
+        </div>
       </div>
-      <div class="auth-buttons" id="auth-buttons-wrap">
-        <button type="button" class="btn btn-ghost" id="btn-register">Register</button>
-        <button type="button" class="btn btn-google" id="btn-login-google">Login with Google</button>
-      </div>
-    </div>
+    </header>
     <p class="user-plan-info" id="user-plan-info">Current plan: <strong>starter</strong></p>
     <header class="hero">
       <div class="logo-wrap" id="logo-wrap">
@@ -775,7 +820,7 @@
     </div>
   </div>
 
-  <div id="onboarding-overlay" class="auth-modal-overlay hidden" aria-hidden="true">
+  <div id="onboarding-overlay" class="auth-modal-overlay onboarding-overlay-dark hidden" aria-hidden="true">
     <div id="onboarding-modal" class="auth-modal onboarding-modal" role="dialog">
       <div id="onboarding-step-1" class="onboarding-step">
         <h3 id="onboarding-gender-title">Select your gender</h3>
@@ -816,6 +861,8 @@
       logoText.style.display = 'none';
       if (logoWrap) logoWrap.classList.add('logo-has-img');
     }
+    var headerLogoImg = document.getElementById('header-logo-img');
+    if (headerLogoImg) { headerLogoImg.src = logoUrl; headerLogoImg.alt = 'FFoids'; }
   }
 
   // ——— PRICING: custom prices and plan differences ———
@@ -1093,14 +1140,23 @@
     var user = getCurrentUser();
     var el = document.getElementById('user-plan-info');
     var authWrap = document.getElementById('auth-buttons-wrap');
+    var navLogin = document.getElementById('nav-login');
+    var btnGetStarted = document.getElementById('btn-get-started');
+    var t = (typeof i18n !== 'undefined' && i18n[currentLang]) ? i18n[currentLang] : {};
     if (el) {
       if (user && user.email) el.innerHTML = '<span class="user-email">' + (user.email || '') + '</span> · <span class="user-plan">' + getCurrentPlan() + '</span>';
       else el.innerHTML = (currentLang === 'fr' ? 'Plan actuel' : 'Current plan') + ': <strong>' + getCurrentPlan() + '</strong>';
     }
     if (typeof updateUploadSectionVisibility === 'function') updateUploadSectionVisibility();
+    if (navLogin) navLogin.textContent = (user && user.email) ? (t.navLogout || 'Log out') : (t.navLogin || 'Login');
+    if (btnGetStarted) btnGetStarted.textContent = t.navGetStarted || 'Get started';
+    if (document.getElementById('header-logo-text')) document.getElementById('header-logo-text').textContent = t.headerLogoText || 'FaceIQ Labs';
+    if (document.getElementById('nav-how')) document.getElementById('nav-how').textContent = t.navHow || 'How it works';
+    if (document.getElementById('nav-plan')) document.getElementById('nav-plan').textContent = t.navPlan || 'Your Plan';
+    if (document.getElementById('nav-pricing')) document.getElementById('nav-pricing').textContent = t.navPricing || 'Pricing';
     if (authWrap) {
       if (user && user.email) {
-        authWrap.innerHTML = '<span class="user-email" style="font-size:0.9rem">' + (user.email || '') + '</span> <button type="button" class="btn btn-ghost" id="btn-logout">' + (currentLang === 'fr' ? 'Déconnexion' : 'Log out') + '</button>';
+        authWrap.innerHTML = '<span class="user-email" style="font-size:0.9rem">' + (user.email || '') + '</span> <button type="button" class="btn btn-ghost" id="btn-logout">' + (t.navLogout || 'Log out') + '</button>';
         var logoutBtn = document.getElementById('btn-logout');
         if (logoutBtn) logoutBtn.addEventListener('click', function() { setCurrentUser(null); setCurrentPlan('starter'); setCurrentProfile(null); updateUserUI(); renderPricingPlans(); });
       } else {
@@ -1116,6 +1172,14 @@
   renderPricingPlans();
   if (document.getElementById('user-plan-info')) updateUserUI();
   if (typeof showOnboardingIfNeeded === 'function') showOnboardingIfNeeded();
+
+  document.getElementById('nav-login').addEventListener('click', function(e) { e.preventDefault(); if (getCurrentUser() && getCurrentUser().email) { setCurrentUser(null); setCurrentPlan('starter'); setCurrentProfile(null); updateUserUI(); renderPricingPlans(); } else { showGoogleSignInModal(null, null); } });
+  document.getElementById('btn-get-started').addEventListener('click', function() {
+    var el = document.getElementById('upload-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  });
+  var headerLogo = document.getElementById('header-logo');
+  if (headerLogo) headerLogo.addEventListener('click', function(e) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
   // ——— Retour après paiement Gumroad : ?plan=full ou ?plan=pro active le plan puis nettoie l’URL
   (function applyPlanFromUrl() {
@@ -1220,9 +1284,25 @@
       planYourPlan: "Your plan",
       planCurrentPlan: "Current plan",
       planUpgrade: "Upgrade",
-      planGetStarted: "Get started"
+      planGetStarted: "Get started",
+      navHow: "How it works",
+      navPlan: "Your Plan",
+      navPricing: "Pricing",
+      navLogin: "Login",
+      navLogout: "Log out",
+      navGetStarted: "Get started",
+      headerLogoText: "FFoids"
     }
   };
+  if (i18n.fr) {
+    i18n.fr.navHow = "Comment ça marche";
+    i18n.fr.navPlan = "Votre plan";
+    i18n.fr.navPricing = "Tarifs";
+    i18n.fr.navLogin = "Connexion";
+    i18n.fr.navLogout = "Déconnexion";
+    i18n.fr.navGetStarted = "Commencer";
+    i18n.fr.headerLogoText = "FFoids";
+  }
 
   function setLanguage(lang) {
     if (!i18n[lang]) return;
