@@ -245,7 +245,7 @@
     .pricing-section { margin-top: 3rem; margin-bottom: 2rem; }
     .pricing-section h2 { text-align: center; margin-bottom: 0.5rem; }
     .pricing-section .pricing-sub { text-align: center; color: var(--textMuted); margin-bottom: 2rem; font-size: 0.95rem; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: stretch; }
     @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; } }
     .plan-card {
       background: var(--surface2);
@@ -253,9 +253,12 @@
       padding: 1.5rem;
       border: 1px solid rgba(255,255,255,0.06);
       position: relative;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      min-height: 380px;
+      transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .plan-card:hover { border-color: rgba(255,255,255,0.1); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+    .plan-card:hover { border-color: rgba(255,255,255,0.12); box-shadow: 0 12px 32px rgba(0,0,0,0.25); transform: translateY(-4px); }
     .plan-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
     .plan-badge {
       position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
@@ -279,8 +282,10 @@
     .plan-features li.excluded { color: var(--textMuted); opacity: 0.7; }
     .plan-features .icon-check { color: var(--success); flex-shrink: 0; }
     .plan-features .icon-cross { color: #e74c3c; flex-shrink: 0; }
-    .plan-cta { margin-top: 1.25rem; }
-    .plan-cta .btn { width: 100%; }
+    .plan-features { flex: 1; }
+    .plan-cta { margin-top: auto; padding-top: 1.25rem; }
+    .plan-cta .btn { width: 100%; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .plan-cta .btn:hover:not(:disabled) { transform: scale(1.02); }
     .plan-card.featured .plan-cta .btn { background: var(--accent); color: #fff; }
     .plan-card.featured .plan-cta .btn:hover { background: var(--accentDim); }
     /* Auth modal */
@@ -291,6 +296,29 @@
     #auth-modal-msg { color: var(--textMuted); margin-bottom: 1rem; font-size: 0.95rem; }
     #google-signin-btn { margin: 1rem 0; min-height: 44px; }
     .auth-modal-note { font-size: 0.9rem; color: var(--textMuted); margin-bottom: 1rem; }
+    .onboarding-modal { max-width: 420px; }
+    .onboarding-step { padding: 0.5rem 0; }
+    .onboarding-step.hidden { display: none !important; }
+    .onboarding-sub { color: var(--textMuted); font-size: 0.9rem; margin-bottom: 1rem; }
+    .onboarding-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .btn-option { width: 100%; padding: 0.9rem 1.25rem; text-align: left; background: var(--surface2); border: 1px solid rgba(255,255,255,0.1); color: var(--text); border-radius: 8px; cursor: pointer; font-family: var(--font); font-size: 1rem; transition: border-color 0.2s, background 0.2s; }
+    .btn-option:hover { border-color: var(--accent); background: rgba(124, 110, 232, 0.12); }
+    .btn-option.selected { border-color: var(--accent); background: rgba(124, 110, 232, 0.2); }
+    .onboarding-ethnicity-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 280px; overflow-y: auto; margin-bottom: 1.25rem; }
+    .onboarding-ethnicity-list label { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--surface2); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: border-color 0.2s; }
+    .onboarding-ethnicity-list label:hover { border-color: rgba(255,255,255,0.15); }
+    .onboarding-ethnicity-list input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .onboarding-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+    .btn-camera { margin-top: 0.5rem; padding: 0.4rem 0.75rem; font-size: 0.85rem; background: var(--surface2); border: 1px solid rgba(255,255,255,0.15); color: var(--text); border-radius: 8px; cursor: pointer; font-family: var(--font); transition: border-color 0.2s, background 0.2s; }
+    .btn-camera:hover { border-color: var(--accent); background: rgba(124, 110, 232, 0.12); }
+    .camera-preview-wrap { position: relative; background: #000; border-radius: var(--radius); overflow: hidden; margin: 1rem 0; }
+    .camera-preview-wrap video, .camera-preview-wrap canvas { width: 100%; max-height: 360px; display: block; }
+    .landmark-confirm-wrap { margin: 1rem 0; padding: 0.75rem; background: var(--surface2); border-radius: var(--radius); }
+    .landmark-confirm-wrap.hidden { display: none; }
+    .landmark-confirm-text { margin: 0 0 0.5rem 0; font-weight: 500; }
+    .landmark-confirm-actions { display: flex; gap: 0.5rem; }
+    .landmark-all-good-wrap { margin-top: 0.5rem; }
+    .landmark-all-good-wrap.hidden { display: none; }
     .user-plan-info { font-size: 0.85rem; color: var(--textMuted); margin-bottom: 1rem; }
     .user-plan-info .user-email { color: var(--text); }
     .btn-logout { background: none; border: none; color: var(--accent); cursor: pointer; font-size: inherit; margin-left: 0.5rem; }
@@ -298,6 +326,44 @@
     .score-upgrade-msg { color: var(--warn); font-size: 0.9rem; margin-top: 0.5rem; text-align: center; }
 .score-upgrade-msg a { color: var(--accent); font-weight: 600; text-decoration: none; }
 .score-upgrade-msg a:hover { text-decoration: underline; }
+    .upload-login-gate {
+      text-align: center; padding: 2rem; background: rgba(124, 110, 232, 0.1); border: 1px dashed var(--accent);
+      border-radius: var(--radius); margin-bottom: 1.5rem; animation: fadeInUp 0.5s ease;
+    }
+    .upload-login-gate.hidden { display: none !important; }
+    .upload-gate-msg { color: var(--textMuted); margin-bottom: 1rem; font-size: 1rem; }
+    .personalized-plan-wrap { margin-top: 2rem; animation: fadeInUp 0.6s ease; }
+    .personalized-plan-wrap.hidden { display: none !important; }
+    .personalized-plan-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .personalized-plan-sub { color: var(--textMuted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .plan-metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 700px) { .plan-metrics-row { grid-template-columns: repeat(2, 1fr); } }
+    .plan-metric-card {
+      background: var(--surface2); border-radius: var(--radius); padding: 1.25rem; border: 1px solid rgba(255,255,255,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease; animation: fadeInUp 0.5s ease both;
+    }
+    .plan-metric-card:nth-child(1) { animation-delay: 0.1s; border-left: 3px solid var(--warn); }
+    .plan-metric-card:nth-child(2) { animation-delay: 0.2s; border-left: 3px solid var(--success); }
+    .plan-metric-card:nth-child(3) { animation-delay: 0.3s; border-left: 3px solid #5b9ee8; }
+    .plan-metric-card:nth-child(4) { animation-delay: 0.4s; border-left: 3px solid #b87ce8; }
+    .plan-metric-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .plan-metric-card .metric-label { font-size: 0.8rem; color: var(--textMuted); margin-bottom: 0.25rem; }
+    .plan-metric-card .metric-value { font-size: 1.75rem; font-weight: 800; }
+    .plan-metric-card .metric-detail { font-size: 0.8rem; color: var(--textMuted); margin-top: 0.25rem; }
+    .plan-cards-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 600px) { .plan-cards-row { grid-template-columns: 1fr; } }
+    .plan-timeline-card, .plan-flaws-card {
+      background: var(--surface2); border-radius: var(--radius); padding: 1.25rem; border: 1px solid rgba(255,255,255,0.06);
+      animation: fadeInUp 0.5s ease both; animation-delay: 0.3s;
+    }
+    .plan-timeline-card h4, .plan-flaws-card h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .plan-timeline-card .timeline-list, .plan-flaws-card .flaws-list { list-style: none; padding: 0; margin: 0; }
+    .plan-timeline-card .timeline-list li { padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .plan-flaws-card .flaws-list li { padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem; }
+    .plan-flaws-card .flaws-list li::before { content: ''; width: 8px; height: 8px; background: #e74c3c; border-radius: 50%; flex-shrink: 0; }
+    .plan-flaws-card .flaws-list li .addressed { color: var(--success); margin-left: auto; font-size: 0.85rem; }
+    .plan-locked-cta { text-align: center; padding: 2rem; background: rgba(124, 110, 232, 0.08); border-radius: var(--radius); margin-top: 1rem; }
+    .plan-locked-cta a { color: var(--accent); font-weight: 600; }
     /* Sections */
     section {
       background: rgba(26, 26, 32, 0.8);
@@ -317,6 +383,8 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes cardGlow { 0%, 100% { box-shadow: 0 0 20px rgba(124, 110, 232, 0.15); } 50% { box-shadow: 0 0 32px rgba(124, 110, 232, 0.25); } }
     .upload-box { position: relative; }
     .upload-box input[type="file"] {
       position: absolute;
@@ -336,7 +404,7 @@
       user-select: none;
       outline: none;
     }
-    .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(124, 110, 232, 0.08); transform: scale(1.02); box-shadow: 0 0 30px rgba(124, 110, 232, 0.15); }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(124, 110, 232, 0.08); transform: scale(1.02); box-shadow: 0 0 30px rgba(124, 110, 232, 0.15); transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.25s ease; }
     .upload-zone:focus { border-color: var(--accent); }
     .upload-zone { transition: border-color 0.3s, background 0.3s, transform 0.3s ease, box-shadow 0.3s ease; }
     .lang-switcher {
@@ -605,7 +673,11 @@
 
     <section id="upload-section">
       <h2 id="upload-title">Step 1: Upload Your Photos</h2>
-      <div class="upload-row">
+      <div id="upload-login-gate" class="upload-login-gate hidden">
+        <p class="upload-gate-msg"></p>
+        <button type="button" class="btn btn-google" id="upload-gate-login-btn">Login with Google</button>
+      </div>
+      <div class="upload-row" id="upload-row">
         <div class="upload-box">
           <div class="upload-zone" id="zone-front" role="button" tabindex="0" aria-label="Choose front photo">
             <strong id="photo-front-label">Front photo</strong><br>
@@ -613,6 +685,7 @@
           </div>
           <input type="file" id="input-front" accept="image/jpeg,image/png,image/*" aria-hidden="true">
           <p class="landmark-hint" id="hint-front">Face the camera, good lighting.</p>
+          <button type="button" class="btn-camera" id="camera-front" aria-label="Take photo with camera">📷 Camera</button>
         </div>
         <div class="upload-box">
           <div class="upload-zone" id="zone-side" role="button" tabindex="0" aria-label="Choose side profile photo">
@@ -621,6 +694,7 @@
           </div>
           <input type="file" id="input-side" accept="image/jpeg,image/png,image/*" aria-hidden="true">
           <p class="landmark-hint" id="hint-side">90° profile, same framing.</p>
+          <button type="button" class="btn-camera" id="camera-side" aria-label="Take photo with camera">📷 Camera</button>
         </div>
       </div>
       <p class="landmark-hint upload-tips-wrap" id="upload-tips">For a reliable score: frame the face in the center (front and profile), look at the camera, even lighting.</p>
@@ -630,6 +704,17 @@
     <section id="mapping-section" class="hidden">
       <h2 id="mapping-title">Step 2: Landmarks</h2>
       <p><span id="mapping-desc">Points détectés automatiquement. Glissez pour ajuster.</span> <a href="#" id="guide-link">Guide des repères</a></p>
+      <div id="landmark-confirm-wrap" class="landmark-confirm-wrap hidden">
+        <p id="landmark-confirm-text" class="landmark-confirm-text"></p>
+        <div class="landmark-confirm-actions">
+          <button type="button" class="btn btn-secondary" id="btn-landmark-prev">Back</button>
+          <button type="button" class="btn" id="btn-landmark-next">Next</button>
+        </div>
+        <div id="landmark-all-good-wrap" class="landmark-all-good-wrap hidden">
+          <p id="landmark-all-good-text"></p>
+          <button type="button" class="btn" id="btn-landmark-all-good">Yes</button>
+        </div>
+      </div>
       <div class="upload-row">
         <div class="canvas-wrap">
           <div id="konva-front"></div>
@@ -642,7 +727,7 @@
         </div>
       </div>
       <p style="margin-top: 1rem;">
-        <button type="button" class="btn" id="btn-analyze">Lancer l’analyse</button>
+        <button type="button" class="btn hidden" id="btn-analyze">Lancer l’analyse</button>
         <button type="button" class="btn btn-secondary" id="btn-back-upload">Change photos</button>
       </p>
     </section>
@@ -656,6 +741,7 @@
       <p style="text-align: center; color: var(--textMuted);" id="results-score-desc">Note d'harmonie faciale. Plus proche des idéaux = plus élevé.</p>
       <p class="score-note" id="results-score-note">Le score dépend du cadrage et de la détection. Pour un résultat plus fiable : visage au centre, regard caméra, bon éclairage.</p>
       <div id="results-upgrade-cta" class="hidden" aria-hidden="true"></div>
+      <div id="personalized-plan-wrap" class="personalized-plan-wrap hidden"></div>
       <div class="accordion" id="accordion"></div>
       <p class="conseils-personalized" id="conseils-personalized">Conseils personnalisés selon vos mesures (pas toujours les mêmes).</p>
       <h3 class="conseils-title" id="conseils-title-text">Conseils pour améliorer ce qui est nécessaire</h3>
@@ -674,6 +760,41 @@
       <p id="auth-modal-msg">Sign in with Google to continue and choose your plan.</p>
       <div id="google-signin-btn"></div>
       <button type="button" class="btn btn-secondary" onclick="document.getElementById('auth-modal-overlay').classList.add('hidden'); document.getElementById('auth-modal').classList.add('hidden');">Cancel</button>
+    </div>
+  </div>
+
+  <div id="camera-modal-overlay" class="auth-modal-overlay hidden" aria-hidden="true">
+    <div class="auth-modal" style="max-width: 520px;">
+      <h3 id="camera-modal-title">Take photo</h3>
+      <p class="auth-modal-note" id="camera-modal-hint">Position your face in the frame, then click Capture.</p>
+      <div class="camera-preview-wrap"><video id="camera-video" autoplay playsinline muted></video><canvas id="camera-canvas" style="display:none;"></canvas></div>
+      <div class="onboarding-actions" style="margin-top: 1rem;">
+        <button type="button" class="btn btn-secondary" id="camera-cancel">Cancel</button>
+        <button type="button" class="btn" id="camera-capture">Capture</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="onboarding-overlay" class="auth-modal-overlay hidden" aria-hidden="true">
+    <div id="onboarding-modal" class="auth-modal onboarding-modal" role="dialog">
+      <div id="onboarding-step-1" class="onboarding-step">
+        <h3 id="onboarding-gender-title">Select your gender</h3>
+        <div class="onboarding-options">
+          <button type="button" class="btn btn-option" data-gender="woman"><span id="onb-woman">Woman</span></button>
+          <button type="button" class="btn btn-option" data-gender="man"><span id="onb-man">Man</span></button>
+          <button type="button" class="btn btn-option" data-gender="other"><span id="onb-other">Other</span></button>
+        </div>
+        <p style="margin-top: 1rem;"><button type="button" class="btn" id="onboarding-gender-next">Continue</button></p>
+      </div>
+      <div id="onboarding-step-2" class="onboarding-step hidden">
+        <h3 id="onboarding-ethnicity-title">Select your ethnicity</h3>
+        <p class="onboarding-sub" id="onboarding-ethnicity-sub">You can select multiple options</p>
+        <div class="onboarding-ethnicity-list" id="onboarding-ethnicity-list"></div>
+        <div class="onboarding-actions">
+          <button type="button" class="btn btn-secondary" id="onboarding-back">Back</button>
+          <button type="button" class="btn" id="onboarding-continue">Continue</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -721,6 +842,78 @@
   if (GOOGLE_CLIENT_ID) window.GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
   var STORAGE_PLAN = 'ffoids_plan';
   var STORAGE_USER = 'ffoids_user';
+  var STORAGE_PROFILE = 'ffoids_profile';
+
+  function getCurrentProfile() { try { var j = localStorage.getItem(STORAGE_PROFILE); return j ? JSON.parse(j) : null; } catch (e) { return null; } }
+  function setCurrentProfile(profile) { try { localStorage.setItem(STORAGE_PROFILE, profile ? JSON.stringify(profile) : ''); } catch (e) {} }
+
+  var ETHNICITY_OPTIONS = [
+    'East Asian', 'South Asian', 'Black / African', 'Hispanic', 'Middle Eastern', 'Native American', 'Pacific Islander', 'White / Caucasian'
+  ];
+  var ETHNICITY_OPTIONS_FR = [
+    'Asie de l\'Est', 'Asie du Sud', 'Noir / Africain', 'Hispanique', 'Moyen-Orient', 'Amérindien', 'Îles du Pacifique', 'Blanc / Caucasien'
+  ];
+
+  function showOnboardingIfNeeded() {
+    var user = getCurrentUser();
+    if (!user || !user.email) return;
+    var profile = getCurrentProfile();
+    if (profile && profile.onboardingComplete) return;
+    var overlay = document.getElementById('onboarding-overlay');
+    var step1 = document.getElementById('onboarding-step-1');
+    var step2 = document.getElementById('onboarding-step-2');
+    if (!overlay || !step1 || !step2) return;
+    overlay.classList.remove('hidden');
+    step1.classList.remove('hidden');
+    step2.classList.add('hidden');
+    var lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
+    document.getElementById('onboarding-gender-title').textContent = lang === 'fr' ? 'Indiquez votre genre' : 'Select your gender';
+    document.getElementById('onb-woman').textContent = lang === 'fr' ? 'Femme' : 'Woman';
+    document.getElementById('onb-man').textContent = lang === 'fr' ? 'Homme' : 'Man';
+    document.getElementById('onb-other').textContent = lang === 'fr' ? 'Autre' : 'Other';
+    document.getElementById('onboarding-ethnicity-title').textContent = lang === 'fr' ? 'Indiquez votre origine / ethnicité' : 'Select your ethnicity';
+    document.getElementById('onboarding-ethnicity-sub').textContent = lang === 'fr' ? 'Vous pouvez sélectionner plusieurs options.' : 'You can select multiple options';
+    document.getElementById('onboarding-back').textContent = lang === 'fr' ? 'Retour' : 'Back';
+    document.getElementById('onboarding-continue').textContent = lang === 'fr' ? 'Continuer' : 'Continue';
+    var list = document.getElementById('onboarding-ethnicity-list');
+    list.innerHTML = ETHNICITY_OPTIONS.map(function(opt, i) {
+      var label = lang === 'fr' ? ETHNICITY_OPTIONS_FR[i] : opt;
+      return '<label><input type="checkbox" name="ethnicity" value="' + opt + '"> <span>' + label + '</span></label>';
+    }).join('');
+    document.querySelectorAll('.btn-option[data-gender]').forEach(function(btn) {
+      btn.classList.remove('selected');
+      btn.onclick = function() {
+        document.querySelectorAll('.btn-option[data-gender]').forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        window._onboardingGender = btn.getAttribute('data-gender');
+      };
+    });
+    var genderNext = document.getElementById('onboarding-gender-next');
+    if (genderNext) genderNext.textContent = lang === 'fr' ? 'Continuer' : 'Continue';
+    if (genderNext) genderNext.onclick = function() {
+      var g = window._onboardingGender;
+      if (!g) { alert(lang === 'fr' ? 'Choisissez un genre.' : 'Please select a gender.'); return; }
+      step1.classList.add('hidden');
+      step2.classList.remove('hidden');
+    };
+    document.getElementById('onboarding-back').onclick = function() {
+      step2.classList.add('hidden');
+      step1.classList.remove('hidden');
+    };
+    document.getElementById('onboarding-continue').onclick = function() {
+      var gender = window._onboardingGender;
+      if (!gender && !profile) { alert(lang === 'fr' ? 'Choisissez un genre.' : 'Please select a gender.'); return; }
+      if (!gender) gender = (profile && profile.gender) || 'other';
+      var checkboxes = list.querySelectorAll('input[name="ethnicity"]:checked');
+      var ethnicity = Array.from(checkboxes).map(function(c) { return c.value; });
+      var newProfile = { gender: gender, ethnicity: ethnicity, onboardingComplete: true };
+      setCurrentProfile(newProfile);
+      overlay.classList.add('hidden');
+      if (typeof updateUploadSectionVisibility === 'function') updateUploadSectionVisibility();
+      var scrollTo = document.getElementById('upload-section');
+      if (scrollTo) scrollTo.scrollIntoView({ behavior: 'smooth' });
+    };
+  }
 
   // ——— Gumroad : liens vers tes produits. Après paiement, configure dans Gumroad "Redirect" vers : https://ton-site.com/?plan=full ou ?plan=pro
   var GUMROAD_FULL_URL = 'https://taikosouslapluie.gumroad.com/l/jidadd';
@@ -817,6 +1010,7 @@
               setCurrentUser({ email: payload.email || '', name: payload.name || '', picture: payload.picture || '' });
               closeAuthModal();
               updateUserUI();
+              if (typeof showOnboardingIfNeeded === 'function') showOnboardingIfNeeded();
               if (planId && plan) {
                 var gumroadUrl = getGumroadUrl(planId);
                 if (gumroadUrl) { window.location.href = gumroadUrl; return; }
@@ -876,6 +1070,25 @@
     alert(msg);
   }
 
+  function updateUploadSectionVisibility() {
+    var user = getCurrentUser();
+    var gate = document.getElementById('upload-login-gate');
+    var uploadRow = document.getElementById('upload-row');
+    var gateMsg = gate && gate.querySelector('.upload-gate-msg');
+    var gateBtn = document.getElementById('upload-gate-login-btn');
+    if (gate && uploadRow) {
+      if (user && user.email) {
+        gate.classList.add('hidden');
+        uploadRow.classList.remove('hidden');
+      } else {
+        gate.classList.remove('hidden');
+        uploadRow.classList.add('hidden');
+        if (gateMsg) gateMsg.textContent = currentLang === 'fr' ? 'Connectez-vous avec Google pour utiliser l\'analyse faciale et le plan personnalisé.' : 'Sign in with Google to use the facial scan and personalized plan.';
+        if (gateBtn) gateBtn.onclick = function() { showGoogleSignInModal(null, null); };
+      }
+    }
+  }
+
   function updateUserUI() {
     var user = getCurrentUser();
     var el = document.getElementById('user-plan-info');
@@ -884,11 +1097,12 @@
       if (user && user.email) el.innerHTML = '<span class="user-email">' + (user.email || '') + '</span> · <span class="user-plan">' + getCurrentPlan() + '</span>';
       else el.innerHTML = (currentLang === 'fr' ? 'Plan actuel' : 'Current plan') + ': <strong>' + getCurrentPlan() + '</strong>';
     }
+    if (typeof updateUploadSectionVisibility === 'function') updateUploadSectionVisibility();
     if (authWrap) {
       if (user && user.email) {
         authWrap.innerHTML = '<span class="user-email" style="font-size:0.9rem">' + (user.email || '') + '</span> <button type="button" class="btn btn-ghost" id="btn-logout">' + (currentLang === 'fr' ? 'Déconnexion' : 'Log out') + '</button>';
         var logoutBtn = document.getElementById('btn-logout');
-        if (logoutBtn) logoutBtn.addEventListener('click', function() { setCurrentUser(null); setCurrentPlan('starter'); updateUserUI(); renderPricingPlans(); });
+        if (logoutBtn) logoutBtn.addEventListener('click', function() { setCurrentUser(null); setCurrentPlan('starter'); setCurrentProfile(null); updateUserUI(); renderPricingPlans(); });
       } else {
         authWrap.innerHTML = '<button type="button" class="btn btn-ghost" id="btn-register">' + (currentLang === 'fr' ? 'S\'inscrire' : 'Register') + '</button> <button type="button" class="btn btn-google" id="btn-login-google">' + (currentLang === 'fr' ? 'Connexion Google' : 'Login with Google') + '</button>';
         var reg = document.getElementById('btn-register');
@@ -901,6 +1115,7 @@
 
   renderPricingPlans();
   if (document.getElementById('user-plan-info')) updateUserUI();
+  if (typeof showOnboardingIfNeeded === 'function') showOnboardingIfNeeded();
 
   // ——— Retour après paiement Gumroad : ?plan=full ou ?plan=pro active le plan puis nettoie l’URL
   (function applyPlanFromUrl() {
@@ -1132,6 +1347,18 @@
     philtrum: 2
   };
 
+  var KEY_LANDMARKS_FRONT = [
+    { name: 'Trichion', key: 'trichion' }, { name: 'Glabella', key: 'glabella' }, { name: 'Nasion', key: 'nasion' },
+    { name: 'Pronasale', key: 'pronasale' }, { name: 'Subnasale', key: 'subnasale' }, { name: 'Upper lip', key: 'labialeSuperius' },
+    { name: 'Mouth center', key: 'stomion' }, { name: 'Lower lip', key: 'labialeInferius' }, { name: 'Chin', key: 'pogonion' },
+    { name: 'Left eye inner', key: 'leftEyeInner' }, { name: 'Right eye inner', key: 'rightEyeInner' },
+    { name: 'Mouth left', key: 'mouthLeft' }, { name: 'Mouth right', key: 'mouthRight' }
+  ];
+  var KEY_LANDMARKS_SIDE = [
+    { name: 'Glabella', key: 'glabella' }, { name: 'Nasion', key: 'nasion' }, { name: 'Pronasale', key: 'pronasale' },
+    { name: 'Subnasale', key: 'subnasale' }, { name: 'Chin', key: 'pogonion' }
+  ];
+
   // Reference values (ranges) — sources in footnotes
   const REFS = {
     facialIndex: { ideal: 1.35, range: [1.28, 1.42], source: 'Neoclassical; Naini 2024' },
@@ -1165,7 +1392,9 @@
     landmarksSide: null,
     faceMesh: null,
     stageFront: null,
-    stageSide: null
+    stageSide: null,
+    landmarkConfirmStep: 'idle',
+    landmarkConfirmIndex: 0
   };
 
   // ——— Frankfort plane: align so porion-orbitale (or tragus-orbitale) is horizontal ———
@@ -1574,6 +1803,67 @@
     }
     setupDrop(zoneFront, 'front');
     setupDrop(zoneSide, 'side');
+
+    var cameraOverlay = document.getElementById('camera-modal-overlay');
+    var cameraVideo = document.getElementById('camera-video');
+    var cameraCanvas = document.getElementById('camera-canvas');
+    var cameraCaptureBtn = document.getElementById('camera-capture');
+    var cameraCancelBtn = document.getElementById('camera-cancel');
+    var cameraTitle = document.getElementById('camera-modal-title');
+    var cameraHint = document.getElementById('camera-modal-hint');
+    var cameraStream = null;
+    var cameraFor = null;
+
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(function(t) { t.stop(); });
+        cameraStream = null;
+      }
+      if (cameraOverlay) cameraOverlay.classList.add('hidden');
+    }
+
+    function openCamera(which) {
+      cameraFor = which;
+      if (cameraTitle) cameraTitle.textContent = (typeof currentLang !== 'undefined' && currentLang === 'fr') ? (which === 'front' ? 'Photo de face' : 'Photo de profil') : (which === 'front' ? 'Front photo' : 'Side profile');
+      if (cameraHint) cameraHint.textContent = (typeof currentLang !== 'undefined' && currentLang === 'fr') ? 'Cadrez votre visage, puis cliquez sur Capturer.' : 'Position your face in the frame, then click Capture.';
+      if (cameraCancelBtn) cameraCancelBtn.textContent = (typeof currentLang !== 'undefined' && currentLang === 'fr') ? 'Annuler' : 'Cancel';
+      if (cameraCaptureBtn) cameraCaptureBtn.textContent = (typeof currentLang !== 'undefined' && currentLang === 'fr') ? 'Capturer' : 'Capture';
+      if (cameraOverlay) cameraOverlay.classList.remove('hidden');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        if (uploadError) { uploadError.textContent = 'Camera not supported in this browser.'; uploadError.classList.remove('hidden'); }
+        stopCamera();
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: which === 'front' ? 'user' : 'environment' } }).then(function(stream) {
+        cameraStream = stream;
+        if (cameraVideo) cameraVideo.srcObject = stream;
+      }).catch(function() {
+        if (uploadError) { uploadError.textContent = (typeof currentLang !== 'undefined' && currentLang === 'fr') ? 'Impossible d\'accéder à la caméra.' : 'Could not access camera.'; uploadError.classList.remove('hidden'); }
+        stopCamera();
+      });
+    }
+
+    if (cameraCaptureBtn) cameraCaptureBtn.onclick = function() {
+      if (!cameraVideo || !cameraCanvas || !cameraStream || !cameraFor) return;
+      var w = cameraVideo.videoWidth, h = cameraVideo.videoHeight;
+      if (!w || !h) return;
+      cameraCanvas.width = w;
+      cameraCanvas.height = h;
+      var ctx = cameraCanvas.getContext('2d');
+      ctx.drawImage(cameraVideo, 0, 0);
+      cameraCanvas.toBlob(function(blob) {
+        if (!blob) return;
+        var file = new File([blob], 'camera-' + cameraFor + '.jpg', { type: 'image/jpeg' });
+        handleFile(cameraFor, file);
+        stopCamera();
+      }, 'image/jpeg', 0.92);
+    };
+    if (cameraCancelBtn) cameraCancelBtn.onclick = stopCamera;
+
+    var btnCameraFront = document.getElementById('camera-front');
+    var btnCameraSide = document.getElementById('camera-side');
+    if (btnCameraFront) btnCameraFront.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); openCamera('front'); });
+    if (btnCameraSide) btnCameraSide.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); openCamera('side'); });
   }
 
   // ——— MediaPipe + Konva overlay (run front then side sequentially) ———
@@ -1635,6 +1925,7 @@
       drawLandmarks('side', state.imgSide, state.landmarksSide);
       errEl.textContent = '';
       errEl.classList.add('hidden');
+      startLandmarkConfirmation();
     });
     function sendImageToFaceMesh(img) {
       var canvas = document.createElement('canvas');
@@ -1660,7 +1951,98 @@
     }
   }
 
-  function drawLandmarks(which, img, points) {
+  function getKeyLandmarkIndex(which, key) {
+    return (LANDMARKS && LANDMARKS[key] !== undefined) ? LANDMARKS[key] : null;
+  }
+
+  function startLandmarkConfirmation() {
+    state.landmarkConfirmStep = 'front';
+    state.landmarkConfirmIndex = 0;
+    var wrap = document.getElementById('landmark-confirm-wrap');
+    if (wrap) wrap.classList.remove('hidden');
+    var btnAnalyze = document.getElementById('btn-analyze');
+    if (btnAnalyze) btnAnalyze.classList.add('hidden');
+    updateLandmarkConfirmUI();
+  }
+
+  function updateLandmarkConfirmUI() {
+    var step = state.landmarkConfirmStep;
+    var idx = state.landmarkConfirmIndex;
+    var textEl = document.getElementById('landmark-confirm-text');
+    var actionsEl = document.querySelector('.landmark-confirm-actions');
+    var allGoodWrap = document.getElementById('landmark-all-good-wrap');
+    var allGoodText = document.getElementById('landmark-all-good-text');
+    var allGoodBtn = document.getElementById('btn-landmark-all-good');
+    var isFr = (typeof currentLang !== 'undefined' && currentLang === 'fr');
+
+    if (step === 'idle' || step === 'side-done') {
+      if (document.getElementById('landmark-confirm-wrap')) document.getElementById('landmark-confirm-wrap').classList.add('hidden');
+      var btnAnalyze = document.getElementById('btn-analyze');
+      if (btnAnalyze) btnAnalyze.classList.remove('hidden');
+      return;
+    }
+
+    if (step === 'front') {
+      var list = KEY_LANDMARKS_FRONT;
+      var total = list.length;
+      if (idx < total) {
+        var name = list[idx].name;
+        var key = list[idx].key;
+        var hi = getKeyLandmarkIndex('front', key);
+        if (textEl) textEl.textContent = (isFr ? 'Point ' : 'Point ') + (idx + 1) + (isFr ? ' sur ' : ' of ') + total + ': ' + name + (isFr ? '. Bien placé ? Glissez pour corriger.' : '. Well placed? Drag to adjust.');
+        if (actionsEl) actionsEl.classList.remove('hidden');
+        if (allGoodWrap) allGoodWrap.classList.add('hidden');
+        drawLandmarks('front', state.imgFront, state.landmarksFront, { highlightIndex: hi });
+        drawLandmarks('side', state.imgSide, state.landmarksSide, {});
+      } else {
+        if (textEl) textEl.classList.add('hidden');
+        if (actionsEl) actionsEl.classList.add('hidden');
+        if (allGoodWrap) allGoodWrap.classList.remove('hidden');
+        if (allGoodText) allGoodText.textContent = isFr ? 'Tout est bon pour la face ?' : 'All good for front?';
+        if (allGoodBtn) allGoodBtn.textContent = isFr ? 'Oui' : 'Yes';
+        drawLandmarks('front', state.imgFront, state.landmarksFront, {});
+        drawLandmarks('side', state.imgSide, state.landmarksSide, {});
+      }
+      return;
+    }
+
+    if (step === 'side') {
+      var listSide = KEY_LANDMARKS_SIDE;
+      var pts = state.landmarksSide && Array.isArray(state.landmarksSide) ? state.landmarksSide : [];
+      var totalSide = listSide.length;
+      if (pts.length < 10) {
+        if (textEl) textEl.classList.add('hidden');
+        if (actionsEl) actionsEl.classList.add('hidden');
+        if (allGoodWrap) allGoodWrap.classList.remove('hidden');
+        if (allGoodText) allGoodText.textContent = isFr ? 'Peu ou pas de points détectés sur le profil. Continuer ?' : 'Few or no landmarks on side. Continue?';
+        if (allGoodBtn) allGoodBtn.textContent = isFr ? 'Oui' : 'Yes';
+        drawLandmarks('front', state.imgFront, state.landmarksFront, {});
+        drawLandmarks('side', state.imgSide, state.landmarksSide, {});
+        return;
+      }
+      if (idx < totalSide) {
+        var name = listSide[idx].name;
+        var key = listSide[idx].key;
+        var hi = getKeyLandmarkIndex('side', key);
+        if (textEl) { textEl.classList.remove('hidden'); textEl.textContent = (isFr ? 'Point ' : 'Point ') + (idx + 1) + (isFr ? ' sur ' : ' of ') + totalSide + ': ' + name + (isFr ? '. Bien placé ?' : '. Well placed?'); }
+        if (actionsEl) actionsEl.classList.remove('hidden');
+        if (allGoodWrap) allGoodWrap.classList.add('hidden');
+        drawLandmarks('front', state.imgFront, state.landmarksFront, {});
+        drawLandmarks('side', state.imgSide, state.landmarksSide, { highlightIndex: hi });
+      } else {
+        if (textEl) textEl.classList.add('hidden');
+        if (actionsEl) actionsEl.classList.add('hidden');
+        if (allGoodWrap) allGoodWrap.classList.remove('hidden');
+        if (allGoodText) allGoodText.textContent = isFr ? 'Tout est bon pour le profil ?' : 'All good for side?';
+        if (allGoodBtn) allGoodBtn.textContent = isFr ? 'Oui' : 'Yes';
+        drawLandmarks('front', state.imgFront, state.landmarksFront, {});
+        drawLandmarks('side', state.imgSide, state.landmarksSide, {});
+      }
+      return;
+    }
+  }
+
+  function drawLandmarks(which, img, points, options) {
     const container = document.getElementById('konva-' + which);
     if (!container || !window.Konva || !img) return;
     container.innerHTML = '';
@@ -1676,10 +2058,13 @@
     layer.add(kimg);
     var isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
     var dotRadius = isTouch ? 4 : 2;
+    var highlightIndex = (options && typeof options.highlightIndex === 'number') ? options.highlightIndex : null;
     const pts = (points && Array.isArray(points)) ? points.slice(0, 468) : [];
     pts.forEach((pt, i) => {
       if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
-        const circle = new Konva.Circle({ x: pt.x * w, y: pt.y * h, radius: dotRadius, fill: i < 50 ? 'cyan' : 'rgba(255,200,100,0.8)', draggable: true });
+        var r = (highlightIndex === i) ? Math.max(dotRadius * 3, 8) : dotRadius;
+        var fill = (highlightIndex === i) ? 'rgba(255,80,80,0.95)' : (i < 50 ? 'cyan' : 'rgba(255,200,100,0.8)');
+        const circle = new Konva.Circle({ x: pt.x * w, y: pt.y * h, radius: r, fill: fill, draggable: true });
         circle.on('dragend', () => {
           pt.x = circle.x() / w;
           pt.y = circle.y() / h;
@@ -1693,6 +2078,13 @@
 
   // ——— Analyze button (plan limits: starter = 10 ratios, no overall score, 2 strengths, 2 improvements) ———
   function runAnalysis() {
+    var user = getCurrentUser();
+    if (!user || !user.email) {
+      showGoogleSignInModal(null, null);
+      var msg = document.getElementById('auth-modal-msg');
+      if (msg) msg.textContent = currentLang === 'fr' ? 'Connectez-vous avec Google pour lancer l\'analyse faciale.' : 'Sign in with Google to run the facial analysis.';
+      return;
+    }
     var plan = getCurrentPlan();
     const lf = state.landmarksFront;
     const ls = state.landmarksSide;
@@ -1810,6 +2202,46 @@
     document.getElementById('action-plan').innerHTML =
       '<h3>' + planTitle + '</h3><ul>' + actionPlan.map(function(p) { return '<li>' + p + '</li>'; }).join('') + '</ul>';
 
+    var planWrap = document.getElementById('personalized-plan-wrap');
+    if (planWrap) {
+      if (plan === 'full' || plan === 'pro') {
+        var baseScore = Number.isFinite(scoreSur10) ? scoreSur10 : 0;
+        var projected = (baseScore + 0.5).toFixed(2);
+        var realistic = (baseScore + 1).toFixed(2);
+        var potential = (baseScore + 1.5).toFixed(2);
+        var titlePersonalized = currentLang === 'fr' ? 'Votre plan personnalisé' : 'Your Personalized Plan';
+        var subPersonalized = currentLang === 'fr' ? 'Feuille de route adaptée à vos mesures avec objectifs réalistes.' : 'A step-by-step roadmap tailored to your unique facial features with projected improvements.';
+        var baselineLabel = currentLang === 'fr' ? 'Score actuel' : 'Baseline';
+        var projectedLabel = currentLang === 'fr' ? 'Projeté' : 'Projected';
+        var realisticLabel = currentLang === 'fr' ? 'Maximum réaliste' : 'Realistic Max';
+        var potentialLabel = currentLang === 'fr' ? 'Potentiel' : 'Potential';
+        var timelineLabel = currentLang === 'fr' ? 'Calendrier d\'actions' : 'Actionable Timeline';
+        var timelineSub = currentLang === 'fr' ? 'Étapes pour atteindre vos objectifs.' : 'Step-by-step roadmap to your goals.';
+        var flawsLabel = currentLang === 'fr' ? 'Points à améliorer' : 'Flaws Addressed';
+        var flawsSub = currentLang === 'fr' ? 'Points que votre plan va améliorer.' : 'Issues your plan will improve.';
+        var addressedLabel = currentLang === 'fr' ? 'Pris en charge' : 'Addressed';
+        planWrap.innerHTML =
+          '<h3 class="personalized-plan-title">' + titlePersonalized + '</h3>' +
+          '<p class="personalized-plan-sub">' + subPersonalized + '</p>' +
+          '<div class="plan-metrics-row">' +
+          '<div class="plan-metric-card"><div class="metric-label">' + baselineLabel + '</div><div class="metric-value" style="color:var(--warn)">' + baseScore.toFixed(2) + '</div><div class="metric-detail">/ 10</div></div>' +
+          '<div class="plan-metric-card"><div class="metric-label">' + projectedLabel + '</div><div class="metric-value" style="color:var(--success)">' + projected + '</div><div class="metric-detail">+0.5</div></div>' +
+          '<div class="plan-metric-card"><div class="metric-label">' + realisticLabel + '</div><div class="metric-value" style="color:#5b9ee8">' + realistic + '</div><div class="metric-detail">/ 10</div></div>' +
+          '<div class="plan-metric-card"><div class="metric-label">' + potentialLabel + '</div><div class="metric-value" style="color:#b87ce8">' + potential + '</div><div class="metric-detail">/ 10</div></div>' +
+          '</div>' +
+          '<div class="plan-cards-row">' +
+          '<div class="plan-timeline-card"><h4>' + timelineLabel + '</h4><p class="metric-detail">' + timelineSub + '</p><ul class="timeline-list">' + actionPlan.map(function(p, i) { return '<li><span>' + p + '</span></li>'; }).join('') + '</ul></div>' +
+          '<div class="plan-flaws-card"><h4>' + flawsLabel + '</h4><p class="metric-detail">' + flawsSub + '</p><ul class="flaws-list">' + improvements.map(function(i) { return '<li><span>' + i + '</span><span class="addressed">✓ ' + addressedLabel + '</span></li>'; }).join('') + '</ul></div>' +
+          '</div>';
+        planWrap.classList.remove('hidden');
+      } else {
+        var lockedTitle = currentLang === 'fr' ? 'Plan personnalisé (plans payants)' : 'Personalized plan (paid plans only)';
+        var lockedMsg = currentLang === 'fr' ? 'Passez au Full ou Pro pour débloquer votre plan personnalisé avec objectifs et calendrier.' : 'Upgrade to Full or Pro to unlock your personalized plan with goals and timeline.';
+        planWrap.innerHTML = '<div class="plan-locked-cta"><h4>' + lockedTitle + '</h4><p>' + lockedMsg + '</p><a href="#pricing-section">' + (currentLang === 'fr' ? 'Voir les plans →' : 'View plans →') + '</a></div>';
+        planWrap.classList.remove('hidden');
+      }
+    }
+
     document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -1819,11 +2251,43 @@
     document.getElementById('results-section').classList.add('hidden');
     state.landmarksFront = null;
     state.landmarksSide = undefined;
+    state.landmarkConfirmStep = 'idle';
+    state.landmarkConfirmIndex = 0;
+    var wrap = document.getElementById('landmark-confirm-wrap');
+    if (wrap) wrap.classList.add('hidden');
     var cf = document.getElementById('konva-front');
     var cs = document.getElementById('konva-side');
     if (cf) { cf.innerHTML = ''; cf.style.width = ''; cf.style.height = ''; }
     if (cs) { cs.innerHTML = ''; cs.style.width = ''; cs.style.height = ''; }
   });
+
+  document.getElementById('btn-landmark-next').addEventListener('click', function() {
+    var step = state.landmarkConfirmStep;
+    if (step === 'front') {
+      var total = KEY_LANDMARKS_FRONT.length;
+      if (state.landmarkConfirmIndex < total) state.landmarkConfirmIndex++;
+    } else if (step === 'side') {
+      var totalS = KEY_LANDMARKS_SIDE.length;
+      if (state.landmarkConfirmIndex < totalS) state.landmarkConfirmIndex++;
+    }
+    updateLandmarkConfirmUI();
+  });
+
+  document.getElementById('btn-landmark-prev').addEventListener('click', function() {
+    if (state.landmarkConfirmIndex > 0) state.landmarkConfirmIndex--;
+    updateLandmarkConfirmUI();
+  });
+
+  document.getElementById('btn-landmark-all-good').addEventListener('click', function() {
+    if (state.landmarkConfirmStep === 'front') {
+      state.landmarkConfirmStep = 'side';
+      state.landmarkConfirmIndex = 0;
+    } else {
+      state.landmarkConfirmStep = 'side-done';
+    }
+    updateLandmarkConfirmUI();
+  });
+
   document.getElementById('guide-link').addEventListener('click', (e) => {
     e.preventDefault();
     alert('Key landmarks: Trichion (forehead), Glabella (between brows), Nasion (nose bridge), Pronasale (nose tip), Subnasale (below nose), Labiale superius/inferius (lips), Stomion (mouth center), Pogonion/Menton (chin), Zygion (cheeks), Tragus (ear), Orbitale (eye bottom). Drag points on the canvas to refine.');
