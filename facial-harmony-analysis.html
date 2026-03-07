@@ -297,19 +297,31 @@
     #auth-modal-msg { color: var(--textMuted); margin-bottom: 1rem; font-size: 0.95rem; }
     #google-signin-btn { margin: 1rem 0; min-height: 44px; }
     .auth-modal-note { font-size: 0.9rem; color: var(--textMuted); margin-bottom: 1rem; }
-    .onboarding-modal { max-width: 420px; }
-    .onboarding-step { padding: 0.5rem 0; }
+    .onboarding-modal { max-width: 440px; padding: 2rem 1.75rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+    .onboarding-progress { display: flex; gap: 0.5rem; margin-bottom: 1.75rem; }
+    .onboarding-progress span { width: 100%; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); transition: background 0.4s ease; }
+    .onboarding-progress span.on { background: var(--accent); }
+    .onboarding-step { padding: 0; animation: onboardingFade 0.35s ease; }
+    @keyframes onboardingFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .onboarding-step.hidden { display: none !important; }
-    .onboarding-sub { color: var(--textMuted); font-size: 0.9rem; margin-bottom: 1rem; }
-    .onboarding-options { display: flex; flex-direction: column; gap: 0.75rem; }
-    .btn-option { width: 100%; padding: 0.9rem 1.25rem; text-align: left; background: var(--surface2); border: 1px solid rgba(255,255,255,0.1); color: var(--text); border-radius: 8px; cursor: pointer; font-family: var(--font); font-size: 1rem; transition: border-color 0.2s, background 0.2s; }
-    .btn-option:hover { border-color: var(--accent); background: rgba(124, 110, 232, 0.12); }
-    .btn-option.selected { border-color: var(--accent); background: rgba(124, 110, 232, 0.2); }
-    .onboarding-ethnicity-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 280px; overflow-y: auto; margin-bottom: 1.25rem; }
-    .onboarding-ethnicity-list label { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--surface2); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: border-color 0.2s; }
-    .onboarding-ethnicity-list label:hover { border-color: rgba(255,255,255,0.15); }
-    .onboarding-ethnicity-list input { width: 18px; height: 18px; accent-color: var(--accent); }
-    .onboarding-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+    .onboarding-modal h3 { font-size: 1.35rem; font-weight: 600; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .onboarding-sub { color: var(--textMuted); font-size: 0.95rem; margin-bottom: 1.25rem; line-height: 1.45; }
+    .onboarding-options { display: flex; flex-direction: column; gap: 0.65rem; }
+    .btn-option { width: 100%; padding: 1rem 1.25rem; text-align: left; background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.08); color: var(--text); border-radius: 14px; cursor: pointer; font-family: var(--font); font-size: 1rem; font-weight: 500; transition: border-color 0.25s, background 0.25s, transform 0.2s; display: flex; align-items: center; gap: 1rem; }
+    .btn-option:hover { border-color: rgba(124, 110, 232, 0.5); background: rgba(124, 110, 232, 0.08); transform: translateX(4px); }
+    .btn-option.selected { border-color: var(--accent); background: rgba(124, 110, 232, 0.18); box-shadow: 0 0 0 1px var(--accent); }
+    .btn-option .option-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+    .btn-option.selected .option-icon { background: rgba(124, 110, 232, 0.3); }
+    .onboarding-ethnicity-list { display: grid; grid-template-columns: 1fr; gap: 0.5rem; max-height: 300px; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 4px; }
+    .onboarding-ethnicity-list::-webkit-scrollbar { width: 6px; }
+    .onboarding-ethnicity-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 3px; }
+    .onboarding-ethnicity-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    .onboarding-ethnicity-list label { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.1rem; background: rgba(255,255,255,0.03); border-radius: 12px; border: 2px solid rgba(255,255,255,0.06); cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+    .onboarding-ethnicity-list label:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); }
+    .onboarding-ethnicity-list label:has(input:checked) { border-color: var(--accent); background: rgba(124, 110, 232, 0.12); }
+    .onboarding-ethnicity-list input { width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; }
+    .onboarding-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.5rem; }
+    .onboarding-actions .btn { padding: 0.65rem 1.35rem; border-radius: 10px; font-weight: 600; }
     .btn-camera { margin-top: 0.5rem; padding: 0.4rem 0.75rem; font-size: 0.85rem; background: var(--surface2); border: 1px solid rgba(255,255,255,0.15); color: var(--text); border-radius: 8px; cursor: pointer; font-family: var(--font); transition: border-color 0.2s, background 0.2s; }
     .btn-camera:hover { border-color: var(--accent); background: rgba(124, 110, 232, 0.12); }
     .camera-preview-wrap { position: relative; background: #000; border-radius: var(--radius); overflow: hidden; margin: 1rem 0; }
@@ -320,6 +332,7 @@
     .landmark-confirm-actions { display: flex; gap: 0.5rem; }
     .landmark-all-good-wrap { margin-top: 0.5rem; }
     .landmark-all-good-wrap.hidden { display: none; }
+    .landmark-all-good-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
     .user-plan-info { font-size: 0.85rem; color: var(--textMuted); margin-bottom: 1rem; }
     .user-plan-info .user-email { color: var(--text); }
     .btn-logout { background: none; border: none; color: var(--accent); cursor: pointer; font-size: inherit; margin-left: 0.5rem; }
@@ -757,7 +770,10 @@
         </div>
         <div id="landmark-all-good-wrap" class="landmark-all-good-wrap hidden">
           <p id="landmark-all-good-text"></p>
-          <button type="button" class="btn" id="btn-landmark-all-good">Yes</button>
+          <div class="landmark-all-good-btns">
+            <button type="button" class="btn" id="btn-landmark-all-good">Yes</button>
+            <button type="button" class="btn btn-secondary hidden" id="btn-skip-side">Skip</button>
+          </div>
         </div>
       </div>
       <div class="upload-row">
@@ -822,14 +838,16 @@
 
   <div id="onboarding-overlay" class="auth-modal-overlay onboarding-overlay-dark hidden" aria-hidden="true">
     <div id="onboarding-modal" class="auth-modal onboarding-modal" role="dialog">
+      <div class="onboarding-progress" aria-hidden="true"><span id="onb-prog-1" class="on"></span><span id="onb-prog-2"></span></div>
       <div id="onboarding-step-1" class="onboarding-step">
         <h3 id="onboarding-gender-title">Select your gender</h3>
+        <p class="onboarding-sub" id="onboarding-gender-sub">This helps us personalize your analysis.</p>
         <div class="onboarding-options">
-          <button type="button" class="btn btn-option" data-gender="woman"><span id="onb-woman">Woman</span></button>
-          <button type="button" class="btn btn-option" data-gender="man"><span id="onb-man">Man</span></button>
-          <button type="button" class="btn btn-option" data-gender="other"><span id="onb-other">Other</span></button>
+          <button type="button" class="btn btn-option" data-gender="woman"><span class="option-icon" aria-hidden="true">♀</span><span id="onb-woman">Woman</span></button>
+          <button type="button" class="btn btn-option" data-gender="man"><span class="option-icon" aria-hidden="true">♂</span><span id="onb-man">Man</span></button>
+          <button type="button" class="btn btn-option" data-gender="other"><span class="option-icon" aria-hidden="true">○</span><span id="onb-other">Other</span></button>
         </div>
-        <p style="margin-top: 1rem;"><button type="button" class="btn" id="onboarding-gender-next">Continue</button></p>
+        <p style="margin-top: 1.25rem;"><button type="button" class="btn" id="onboarding-gender-next">Continue</button></p>
       </div>
       <div id="onboarding-step-2" class="onboarding-step hidden">
         <h3 id="onboarding-ethnicity-title">Select your ethnicity</h3>
@@ -915,6 +933,8 @@
     step2.classList.add('hidden');
     var lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
     document.getElementById('onboarding-gender-title').textContent = lang === 'fr' ? 'Indiquez votre genre' : 'Select your gender';
+    var genderSub = document.getElementById('onboarding-gender-sub');
+    if (genderSub) genderSub.textContent = lang === 'fr' ? 'Cela nous aide à personnaliser votre analyse.' : 'This helps us personalize your analysis.';
     document.getElementById('onb-woman').textContent = lang === 'fr' ? 'Femme' : 'Woman';
     document.getElementById('onb-man').textContent = lang === 'fr' ? 'Homme' : 'Man';
     document.getElementById('onb-other').textContent = lang === 'fr' ? 'Autre' : 'Other';
@@ -942,10 +962,14 @@
       if (!g) { alert(lang === 'fr' ? 'Choisissez un genre.' : 'Please select a gender.'); return; }
       step1.classList.add('hidden');
       step2.classList.remove('hidden');
+      var prog2 = document.getElementById('onb-prog-2');
+      if (prog2) prog2.classList.add('on');
     };
     document.getElementById('onboarding-back').onclick = function() {
       step2.classList.add('hidden');
       step1.classList.remove('hidden');
+      var prog2 = document.getElementById('onb-prog-2');
+      if (prog2) prog2.classList.remove('on');
     };
     document.getElementById('onboarding-continue').onclick = function() {
       var gender = window._onboardingGender;
@@ -1474,7 +1498,9 @@
     stageFront: null,
     stageSide: null,
     landmarkConfirmStep: 'idle',
-    landmarkConfirmIndex: 0
+    landmarkConfirmIndex: 0,
+    manualSideStep: 0,
+    manualSidePoints: null
   };
 
   // ——— Frankfort plane: align so porion-orbitale (or tragus-orbitale) is horizontal ———
@@ -2080,6 +2106,8 @@
         if (allGoodWrap) allGoodWrap.classList.remove('hidden');
         if (allGoodText) allGoodText.textContent = isFr ? 'Tout est bon pour la face ?' : 'All good for front?';
         if (allGoodBtn) allGoodBtn.textContent = isFr ? 'Oui' : 'Yes';
+        var btnSkip = document.getElementById('btn-skip-side');
+        if (btnSkip) btnSkip.classList.add('hidden');
         drawLandmarks('front', state.imgFront, state.landmarksFront, {});
         drawLandmarks('side', state.imgSide, state.landmarksSide, {});
       }
@@ -2091,11 +2119,13 @@
       var pts = state.landmarksSide && Array.isArray(state.landmarksSide) ? state.landmarksSide : [];
       var totalSide = listSide.length;
       if (pts.length < 10) {
-        if (textEl) textEl.classList.add('hidden');
+        if (textEl) { textEl.classList.remove('hidden'); textEl.textContent = isFr ? 'Peu ou pas de points détectés sur le profil.' : 'Few or no landmarks on side.'; }
         if (actionsEl) actionsEl.classList.add('hidden');
         if (allGoodWrap) allGoodWrap.classList.remove('hidden');
-        if (allGoodText) allGoodText.textContent = isFr ? 'Peu ou pas de points détectés sur le profil. Continuer ?' : 'Few or no landmarks on side. Continue?';
-        if (allGoodBtn) allGoodBtn.textContent = isFr ? 'Oui' : 'Yes';
+        if (allGoodText) allGoodText.textContent = isFr ? 'Placer les points manuellement pour analyser le profil, ou continuer sans.' : 'Place points manually to analyze profile, or continue without.';
+        if (allGoodBtn) allGoodBtn.textContent = isFr ? 'Placer les points' : 'Place points';
+        var btnSkip = document.getElementById('btn-skip-side');
+        if (btnSkip) { btnSkip.classList.remove('hidden'); btnSkip.textContent = isFr ? 'Continuer sans' : 'Skip'; }
         drawLandmarks('front', state.imgFront, state.landmarksFront, {});
         drawLandmarks('side', state.imgSide, state.landmarksSide, {});
         return;
@@ -2115,11 +2145,70 @@
         if (allGoodWrap) allGoodWrap.classList.remove('hidden');
         if (allGoodText) allGoodText.textContent = isFr ? 'Tout est bon pour le profil ?' : 'All good for side?';
         if (allGoodBtn) allGoodBtn.textContent = isFr ? 'Oui' : 'Yes';
+        var btnSkip = document.getElementById('btn-skip-side');
+        if (btnSkip) btnSkip.classList.add('hidden');
         drawLandmarks('front', state.imgFront, state.landmarksFront, {});
         drawLandmarks('side', state.imgSide, state.landmarksSide, {});
       }
       return;
     }
+  }
+
+  var MANUAL_SIDE_LABELS = [
+    { en: 'Glabella / Nasion (between brows, nose bridge)', fr: 'Glabelle / Nasion (entre les sourcils, racine du nez)' },
+    { en: 'Pronasale (nose tip)', fr: 'Pronasale (bout du nez)' },
+    { en: 'Subnasale (below nose)', fr: 'Subnasale (sous le nez)' },
+    { en: 'Pogonion (chin)', fr: 'Pogonion (menton)' }
+  ];
+  var MANUAL_SIDE_INDICES = [6, 4, 2, 152];
+
+  function startManualSidePlacement() {
+    state.manualSidePoints = [];
+    state.manualSideStep = 0;
+    var textEl = document.getElementById('landmark-confirm-text');
+    var isFr = (typeof currentLang !== 'undefined' && currentLang === 'fr');
+    if (textEl) { textEl.classList.remove('hidden'); textEl.textContent = (isFr ? 'Cliquez sur l\'image profil : ' : 'Click on the profile image: ') + (isFr ? MANUAL_SIDE_LABELS[0].fr : MANUAL_SIDE_LABELS[0].en); }
+    document.querySelector('.landmark-confirm-actions').classList.add('hidden');
+    document.getElementById('landmark-all-good-wrap').classList.add('hidden');
+    document.getElementById('btn-skip-side').classList.add('hidden');
+    drawLandmarks('side', state.imgSide, null, {});
+    var container = document.getElementById('konva-side');
+    if (!container || !state.stageSide || !window.Konva) return;
+    var stage = state.stageSide;
+    var w = stage.width(), h = stage.height();
+    var clickLayer = new Konva.Layer();
+    stage.add(clickLayer);
+    function onStageClick(evt) {
+      var pos = stage.getPointerPosition();
+      if (!pos) return;
+      var xNorm = pos.x / w, yNorm = pos.y / h;
+      state.manualSidePoints.push({ x: xNorm, y: yNorm });
+      var circle = new Konva.Circle({ x: pos.x, y: pos.y, radius: 6, fill: 'rgba(124, 110, 232, 0.9)', stroke: '#fff', strokeWidth: 1 });
+      clickLayer.add(circle);
+      clickLayer.draw();
+      if (state.manualSidePoints.length >= 4) {
+        stage.off('click tap', onStageClick);
+        var arr = [];
+        for (var i = 0; i < 468; i++) arr.push({ x: 0, y: 0 });
+        for (var j = 0; j < 4; j++) {
+          var idx = MANUAL_SIDE_INDICES[j];
+          arr[idx] = { x: state.manualSidePoints[j].x, y: state.manualSidePoints[j].y };
+        }
+        state.landmarksSide = arr;
+        drawLandmarks('side', state.imgSide, state.landmarksSide, {});
+        state.landmarkConfirmStep = 'side';
+        state.landmarkConfirmIndex = KEY_LANDMARKS_SIDE.length;
+        document.getElementById('landmark-all-good-wrap').classList.remove('hidden');
+        document.getElementById('landmark-confirm-text').classList.add('hidden');
+        document.getElementById('landmark-all-good-text').textContent = isFr ? 'Tout est bon pour le profil ?' : 'All good for side?';
+        document.getElementById('btn-landmark-all-good').textContent = isFr ? 'Oui' : 'Yes';
+        updateLandmarkConfirmUI();
+        return;
+      }
+      state.manualSideStep = state.manualSidePoints.length;
+      if (textEl) textEl.textContent = (isFr ? 'Cliquez : ' : 'Click: ') + (isFr ? MANUAL_SIDE_LABELS[state.manualSideStep].fr : MANUAL_SIDE_LABELS[state.manualSideStep].en);
+    }
+    stage.on('click tap', onStageClick);
   }
 
   function drawLandmarks(which, img, points, options) {
@@ -2353,12 +2442,22 @@
     updateLandmarkConfirmUI();
   });
 
+  var btnSkipSide = document.getElementById('btn-skip-side');
+  if (btnSkipSide) btnSkipSide.addEventListener('click', function() { state.landmarkConfirmStep = 'side-done'; updateLandmarkConfirmUI(); });
+
   document.getElementById('btn-landmark-prev').addEventListener('click', function() {
     if (state.landmarkConfirmIndex > 0) state.landmarkConfirmIndex--;
     updateLandmarkConfirmUI();
   });
 
   document.getElementById('btn-landmark-all-good').addEventListener('click', function() {
+    if (state.landmarkConfirmStep === 'side' && (!state.landmarksSide || state.landmarksSide.length < 10)) {
+      var btn = document.getElementById('btn-landmark-all-good');
+      if (btn && (btn.textContent.indexOf('Place') !== -1 || btn.textContent.indexOf('Placer') !== -1)) {
+        startManualSidePlacement();
+        return;
+      }
+    }
     if (state.landmarkConfirmStep === 'front') {
       state.landmarkConfirmStep = 'side';
       state.landmarkConfirmIndex = 0;
