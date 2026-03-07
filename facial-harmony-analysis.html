@@ -2374,7 +2374,8 @@
 
   function exportPromoCard(scoreSur10, imgF, imgS, topPercent, oneInN) {
     var c = document.createElement('canvas');
-    c.width = 420; c.height = 520;
+    c.width = 420;
+    c.height = 580;
     var ctx = c.getContext('2d');
     ctx.fillStyle = '#1a1a22';
     ctx.fillRect(0, 0, c.width, c.height);
@@ -2409,6 +2410,30 @@
     ctx.font = '14px system-ui, sans-serif';
     ctx.fillText('Top ' + (topPercent < 1 ? topPercent.toFixed(1) : Math.round(topPercent)) + '%', 210 - ctx.measureText('Top ' + (topPercent < 1 ? topPercent.toFixed(1) : Math.round(topPercent)) + '%').width / 2, 310);
     ctx.fillText('1 in ' + oneInN, 210 - ctx.measureText('1 in ' + oneInN).width / 2, 335);
+    var curveY = 370;
+    var curveW = 380;
+    var curveH = 44;
+    var cx0 = (c.width - curveW) / 2;
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    var scoreVal = Number.isFinite(scoreSur10) ? scoreSur10 : 5;
+    for (var x = 0; x <= curveW; x += 2) {
+      var t = x / curveW;
+      var g = Math.exp(-Math.pow((t * 10 - 5), 2) / 4);
+      var y = curveY + curveH - g * curveH;
+      if (x === 0) ctx.moveTo(cx0 + x, y); else ctx.lineTo(cx0 + x, y);
+    }
+    ctx.stroke();
+    var dotX = cx0 + (scoreVal / 10) * curveW;
+    ctx.fillStyle = '#4ade80';
+    ctx.beginPath();
+    ctx.arc(dotX, curveY + curveH - 4, 5, 0, Math.PI * 2);
+    ctx.fill();
+    var siteUrl = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : 'https://ffoidsweb.vercel.app';
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '13px system-ui, sans-serif';
+    ctx.fillText(siteUrl, 210 - ctx.measureText(siteUrl).width / 2, 550);
     var link = document.createElement('a');
     link.download = 'ffoids-score-' + s + '.png';
     link.href = c.toDataURL('image/png');
