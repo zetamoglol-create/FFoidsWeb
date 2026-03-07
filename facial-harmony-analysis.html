@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>FFoids — Facial harmony analysis</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
@@ -280,9 +280,9 @@
     .plan-card.featured .plan-cta .btn { background: var(--accent); color: #fff; }
     .plan-card.featured .plan-cta .btn:hover { background: var(--accentDim); }
     /* Auth modal */
-    .auth-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .auth-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .auth-modal-overlay.hidden { display: none; }
-    .auth-modal { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; max-width: 400px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
+    .auth-modal { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; max-width: 400px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); margin: auto; }
     .auth-modal h3 { margin-bottom: 0.75rem; }
     #auth-modal-msg { color: var(--textMuted); margin-bottom: 1rem; font-size: 0.95rem; }
     #google-signin-btn { margin: 1rem 0; min-height: 44px; }
@@ -352,9 +352,36 @@
     }
     .lang-switcher button:hover { color: var(--text); background: var(--surface2); }
     .lang-switcher button.active { color: var(--accent); border-color: var(--accent); background: rgba(124, 110, 232, 0.15); }
+    .top-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+    .auth-buttons { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .auth-buttons .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text); }
+    .auth-buttons .btn-ghost:hover { background: var(--surface2); border-color: var(--accent); }
+    .btn-google { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 8px; background: #fff; color: #333; border: none; font-weight: 600; cursor: pointer; font-family: var(--font); font-size: 0.9rem; }
+    .btn-google:hover { background: #f0f0f0; }
     .upload-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; align-items: start; }
     @media (max-width: 600px) { .upload-row { grid-template-columns: 1fr; } }
-    .canvas-wrap { position: relative; background: #000; border-radius: var(--radius); overflow: hidden; margin-top: 1rem; display: inline-block; max-width: 100%; }
+    /* Mobile: touch targets, safe area, layout */
+    @media (max-width: 600px) {
+      .container { padding: 1rem; padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+      .top-bar { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+      .top-bar .lang-switcher { justify-content: center; margin-bottom: 0; }
+      .auth-buttons { justify-content: center; }
+      .auth-buttons .btn-ghost, .btn-google { min-height: 44px; min-width: 44px; padding: 0.6rem 1rem; font-size: 0.95rem; }
+      .user-plan-info { font-size: 0.8rem; word-break: break-word; text-align: center; }
+      .hero { padding: 2rem 1rem; }
+      .upload-zone { min-height: 120px; padding: 1.5rem 1rem; }
+      .btn { min-height: 44px; padding: 0.75rem 1.25rem; font-size: 1rem; }
+      .score-out-of-ten { font-size: 2.75rem; }
+      .score-badge { font-size: 2rem; }
+      .accordion-header { padding: 1rem; min-height: 44px; }
+      section { padding: 1rem; }
+      #mapping-section .btn { display: block; width: 100%; margin-bottom: 0.5rem; }
+    }
+    @media (max-width: 480px) {
+      .auth-buttons { flex-direction: column; }
+      .auth-buttons .btn-ghost, .btn-google { width: 100%; justify-content: center; }
+    }
+    .canvas-wrap { position: relative; background: #000; border-radius: var(--radius); overflow: hidden; margin-top: 1rem; display: inline-block; max-width: 100%; touch-action: none; }
     .canvas-wrap canvas, .canvas-wrap div { display: block; max-width: 100%; vertical-align: top; }
     .landmark-hint { font-size: 0.85rem; color: var(--textMuted); margin-top: 0.5rem; }
     .landmark-hint.side-note { font-style: italic; margin-top: 0.25rem; opacity: 0.9; }
@@ -422,8 +449,14 @@
       from { opacity: 0; max-height: 0; }
       to { opacity: 1; max-height: 800px; }
     }
+    .accordion-body table { width: 100%; min-width: 320px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
     th, td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--surface2); }
+    @media (max-width: 600px) {
+      .accordion-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .accordion-body table { font-size: 0.8rem; }
+      th, td { padding: 0.4rem 0.5rem; }
+    }
     th { color: var(--textMuted); font-weight: 500; }
     .value-ok { color: var(--success); }
     .value-warn { color: var(--warn); }
@@ -474,9 +507,15 @@
   </div>
   <div class="app-wrap">
   <div class="container">
-    <div class="lang-switcher" role="group" aria-label="Language">
-      <button type="button" id="lang-fr" data-lang="fr">FR</button>
-      <button type="button" id="lang-en" class="active" data-lang="en">EN</button>
+    <div class="top-bar">
+      <div class="lang-switcher" role="group" aria-label="Language">
+        <button type="button" id="lang-fr" data-lang="fr">FR</button>
+        <button type="button" id="lang-en" class="active" data-lang="en">EN</button>
+      </div>
+      <div class="auth-buttons" id="auth-buttons-wrap">
+        <button type="button" class="btn btn-ghost" id="btn-register">Register</button>
+        <button type="button" class="btn btn-google" id="btn-login-google">Login with Google</button>
+      </div>
     </div>
     <p class="user-plan-info" id="user-plan-info">Current plan: <strong>starter</strong></p>
     <header class="hero">
@@ -566,7 +605,7 @@
             <strong id="photo-front-label">Front photo</strong><br>
             <span id="label-front">Click or drop an image</span>
           </div>
-          <input type="file" id="input-front" accept="image/jpeg,image/png" aria-hidden="true">
+          <input type="file" id="input-front" accept="image/jpeg,image/png,image/*" aria-hidden="true">
           <p class="landmark-hint" id="hint-front">Face the camera, good lighting.</p>
         </div>
         <div class="upload-box">
@@ -574,7 +613,7 @@
             <strong id="photo-side-label">Side profile</strong><br>
             <span id="label-side">Click or drop an image</span>
           </div>
-          <input type="file" id="input-side" accept="image/jpeg,image/png" aria-hidden="true">
+          <input type="file" id="input-side" accept="image/jpeg,image/png,image/*" aria-hidden="true">
           <p class="landmark-hint" id="hint-side">90° profile, same framing.</p>
         </div>
       </div>
@@ -723,7 +762,11 @@
     var modal = document.getElementById('auth-modal');
     var msg = document.getElementById('auth-modal-msg');
     if (!overlay || !modal || !msg) return;
-    msg.textContent = currentLang === 'fr' ? 'Connectez-vous avec Google pour continuer et choisir le plan ' + (plan && plan.name) + '.' : 'Sign in with Google to continue and choose the ' + (plan && plan.name) + ' plan.';
+    if (plan && plan.name) {
+      msg.textContent = currentLang === 'fr' ? 'Connectez-vous avec Google pour continuer et choisir le plan ' + plan.name + '.' : 'Sign in with Google to continue and choose the ' + plan.name + ' plan.';
+    } else {
+      msg.textContent = currentLang === 'fr' ? 'Connectez-vous avec Google pour vous inscrire ou vous connecter.' : 'Sign in with Google to register or log in.';
+    }
     overlay.classList.remove('hidden');
     modal.classList.remove('hidden');
     var div = document.getElementById('google-signin-btn');
@@ -737,7 +780,8 @@
               var payload = JSON.parse(atob(res.credential.split('.')[1]));
               setCurrentUser({ email: payload.email || '', name: payload.name || '', picture: payload.picture || '' });
               closeAuthModal();
-              completePurchase(planId, plan);
+              updateUserUI();
+              if (planId && plan) completePurchase(planId, plan);
             } catch (e) {}
           }
         } });
@@ -752,8 +796,9 @@
         if (demoBtn) demoBtn.addEventListener('click', function() {
           setCurrentUser({ email: 'demo@example.com', name: 'Demo User' });
           closeAuthModal();
+          updateUserUI();
           var pending = window._pendingPlanAfterAuth;
-          if (pending) completePurchase(pending.planId, pending.plan);
+          if (pending && pending.planId && pending.plan) completePurchase(pending.planId, pending.plan);
         });
       }
     } else {
@@ -784,14 +829,24 @@
   function updateUserUI() {
     var user = getCurrentUser();
     var el = document.getElementById('user-plan-info');
-    if (!el) return;
-    if (user && user.email) {
-      el.innerHTML = '<span class="user-email">' + (user.email || '') + '</span> · <span class="user-plan">' + getCurrentPlan() + '</span> <button type="button" class="btn-logout" id="btn-logout">' + (currentLang === 'fr' ? 'Déconnexion' : 'Log out') + '</button>';
-    } else {
-      el.innerHTML = '<span class="user-plan">' + (currentLang === 'fr' ? 'Plan actuel' : 'Current plan') + ': <strong>' + getCurrentPlan() + '</strong></span>';
+    var authWrap = document.getElementById('auth-buttons-wrap');
+    if (el) {
+      if (user && user.email) el.innerHTML = '<span class="user-email">' + (user.email || '') + '</span> · <span class="user-plan">' + getCurrentPlan() + '</span>';
+      else el.innerHTML = (currentLang === 'fr' ? 'Plan actuel' : 'Current plan') + ': <strong>' + getCurrentPlan() + '</strong>';
     }
-    var logoutBtn = document.getElementById('btn-logout');
-    if (logoutBtn) logoutBtn.addEventListener('click', function() { setCurrentUser(null); setCurrentPlan('starter'); updateUserUI(); renderPricingPlans(); });
+    if (authWrap) {
+      if (user && user.email) {
+        authWrap.innerHTML = '<span class="user-email" style="font-size:0.9rem">' + (user.email || '') + '</span> <button type="button" class="btn btn-ghost" id="btn-logout">' + (currentLang === 'fr' ? 'Déconnexion' : 'Log out') + '</button>';
+        var logoutBtn = document.getElementById('btn-logout');
+        if (logoutBtn) logoutBtn.addEventListener('click', function() { setCurrentUser(null); setCurrentPlan('starter'); updateUserUI(); renderPricingPlans(); });
+      } else {
+        authWrap.innerHTML = '<button type="button" class="btn btn-ghost" id="btn-register">' + (currentLang === 'fr' ? 'S\'inscrire' : 'Register') + '</button> <button type="button" class="btn btn-google" id="btn-login-google">' + (currentLang === 'fr' ? 'Connexion Google' : 'Login with Google') + '</button>';
+        var reg = document.getElementById('btn-register');
+        var log = document.getElementById('btn-login-google');
+        if (reg) reg.addEventListener('click', function() { showGoogleSignInModal(null, null); });
+        if (log) log.addEventListener('click', function() { showGoogleSignInModal(null, null); });
+      }
+    }
   }
 
   renderPricingPlans();
@@ -935,6 +990,7 @@
     var dl = document.getElementById('disclaimer-label');
     if (dl) dl.textContent = t.disclaimerLabel + ' ';
     set('disclaimer-text', t.disclaimer);
+    if (typeof updateUserUI === 'function') updateUserUI();
       if (wrap) wrap.parentElement.classList.remove('lang-switching');
     };
     var t = i18n[lang];
@@ -1445,70 +1501,96 @@
   }
 
   // ——— MediaPipe + Konva overlay (run front then side sequentially) ———
+  var noFaceTimeoutId = null;
   function runFaceMesh() {
     state.landmarksFront = null;
     state.landmarksSide = undefined;
+    if (noFaceTimeoutId) { clearTimeout(noFaceTimeoutId); noFaceTimeoutId = null; }
     var cf = document.getElementById('konva-front');
     var cs = document.getElementById('konva-side');
     if (cf) { cf.innerHTML = ''; cf.style.width = ''; cf.style.height = ''; }
     if (cs) { cs.innerHTML = ''; cs.style.width = ''; cs.style.height = ''; }
     const FaceMeshClass = window.FaceMesh || window.faceMesh;
+    const errEl = document.getElementById('upload-error');
     if (!FaceMeshClass) {
-      document.getElementById('upload-error').textContent = 'Face Mesh library not loaded. Check CDN or network.';
+      errEl.textContent = currentLang === 'fr' ? 'Chargement de la détection faciale… Réessayez dans un instant.' : 'Loading face detection… Please try again in a moment.';
+      errEl.classList.remove('hidden');
+      setTimeout(function() { if (state.imgFront && state.imgSide) runFaceMesh(); }, 800);
       return;
     }
-    const errEl = document.getElementById('upload-error');
-    errEl.textContent = 'Détection des points du visage…';
+    errEl.textContent = currentLang === 'fr' ? 'Détection des points du visage…' : 'Detecting face points…';
     errEl.classList.remove('hidden');
-    state.faceMesh = new FaceMeshClass({
-      locateFile: (file) => 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/' + file
-    });
-    state.faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true });
+    try {
+      state.faceMesh = new FaceMeshClass({
+        locateFile: function(file) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/' + file; }
+      });
+      state.faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true });
+    } catch (e) {
+      errEl.textContent = (currentLang === 'fr' ? 'Erreur d\'initialisation de la détection faciale. ' : 'Face detection init error. ') + (e && e.message ? e.message : '');
+      return;
+    }
     var sideTimeout = null;
     state.faceMesh.onResults((results) => {
       const hasLandmarks = results.multiFaceLandmarks && results.multiFaceLandmarks[0];
       if (!state.landmarksFront) {
-        if (!hasLandmarks) return;
-        const lm = results.multiFaceLandmarks[0];
-        state.landmarksFront = alignFrankfort(lm, state.imgFront.width, state.imgFront.height);
-        drawLandmarks('front', state.imgFront, state.landmarksFront);
-        if (!state.imgSide) { document.getElementById('upload-error').textContent = ''; document.getElementById('upload-error').classList.add('hidden'); }
-        if (state.imgSide) {
-          sendImageToFaceMesh(state.imgSide);
-          sideTimeout = setTimeout(function() {
-            if (state.landmarksSide === undefined) {
-              state.landmarksSide = null;
-              drawLandmarks('side', state.imgSide, null);
-              document.getElementById('upload-error').textContent = '';
-              document.getElementById('upload-error').classList.add('hidden');
-            }
-          }, 2500);
+        if (hasLandmarks) {
+          if (noFaceTimeoutId) { clearTimeout(noFaceTimeoutId); noFaceTimeoutId = null; }
+          const lm = results.multiFaceLandmarks[0];
+          state.landmarksFront = alignFrankfort(lm, state.imgFront.width, state.imgFront.height);
+          drawLandmarks('front', state.imgFront, state.landmarksFront);
+          if (!state.imgSide) { errEl.textContent = ''; errEl.classList.add('hidden'); }
+          if (state.imgSide) {
+            try { sendImageToFaceMesh(state.imgSide); } catch (e2) { errEl.textContent = (e2 && e2.message) || 'Error sending side image'; }
+            sideTimeout = setTimeout(function() {
+              if (state.landmarksSide === undefined) {
+                state.landmarksSide = null;
+                drawLandmarks('side', state.imgSide, null);
+                errEl.textContent = '';
+                errEl.classList.add('hidden');
+              }
+            }, 2500);
+          }
         }
-      } else {
-        if (sideTimeout) { clearTimeout(sideTimeout); sideTimeout = null; }
-        const lm = hasLandmarks ? results.multiFaceLandmarks[0] : null;
-        state.landmarksSide = lm ? alignFrankfort(lm, state.imgSide.width, state.imgSide.height) : null;
-        drawLandmarks('side', state.imgSide, state.landmarksSide);
-        document.getElementById('upload-error').textContent = '';
-        document.getElementById('upload-error').classList.add('hidden');
+        return;
       }
+      if (sideTimeout) { clearTimeout(sideTimeout); sideTimeout = null; }
+      const lm = hasLandmarks ? results.multiFaceLandmarks[0] : null;
+      state.landmarksSide = lm ? alignFrankfort(lm, state.imgSide.width, state.imgSide.height) : null;
+      drawLandmarks('side', state.imgSide, state.landmarksSide);
+      errEl.textContent = '';
+      errEl.classList.add('hidden');
     });
     function sendImageToFaceMesh(img) {
-      const canvas = document.createElement('canvas');
+      var canvas = document.createElement('canvas');
       canvas.width = img.width;
       canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
+      var ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       state.faceMesh.send({ image: canvas });
     }
-    if (state.imgFront) sendImageToFaceMesh(state.imgFront);
+    noFaceTimeoutId = setTimeout(function() {
+      noFaceTimeoutId = null;
+      if (state.landmarksFront === null && errEl && !errEl.classList.contains('hidden')) {
+        errEl.textContent = currentLang === 'fr'
+          ? 'Aucun visage détecté sur la photo de face. Utilisez une photo plus claire, face à la caméra.'
+          : 'No face detected in front photo. Try a clearer photo, face the camera.';
+      }
+    }, 8000);
+    try {
+      if (state.imgFront) sendImageToFaceMesh(state.imgFront);
+    } catch (e) {
+      if (noFaceTimeoutId) { clearTimeout(noFaceTimeoutId); noFaceTimeoutId = null; }
+      errEl.textContent = (currentLang === 'fr' ? 'Erreur lors de l\'analyse. ' : 'Analysis error. ') + (e && e.message ? e.message : '');
+    }
   }
 
   function drawLandmarks(which, img, points) {
     const container = document.getElementById('konva-' + which);
     if (!container || !window.Konva || !img) return;
     container.innerHTML = '';
-    const w = Math.min(400, img.width || 400);
+    var maxW = 400;
+    if (typeof window !== 'undefined' && window.innerWidth) maxW = Math.min(400, window.innerWidth - 48);
+    const w = Math.min(maxW, img.width || maxW);
     const h = img.width && img.width > 0 ? (img.height / img.width) * w : w;
     container.style.width = w + 'px';
     container.style.height = h + 'px';
@@ -1516,10 +1598,12 @@
     const layer = new Konva.Layer();
     const kimg = new Konva.Image({ image: img, width: w, height: h });
     layer.add(kimg);
+    var isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    var dotRadius = isTouch ? 4 : 2;
     const pts = (points && Array.isArray(points)) ? points.slice(0, 468) : [];
     pts.forEach((pt, i) => {
       if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
-        const circle = new Konva.Circle({ x: pt.x * w, y: pt.y * h, radius: 2, fill: i < 50 ? 'cyan' : 'rgba(255,200,100,0.8)', draggable: true });
+        const circle = new Konva.Circle({ x: pt.x * w, y: pt.y * h, radius: dotRadius, fill: i < 50 ? 'cyan' : 'rgba(255,200,100,0.8)', draggable: true });
         circle.on('dragend', () => {
           pt.x = circle.x() / w;
           pt.y = circle.y() / h;
@@ -1538,7 +1622,16 @@
     const ls = state.landmarksSide;
     const imgF = state.imgFront;
     const imgS = state.imgSide;
-    if (!lf || !imgF) return;
+    var errEl = document.getElementById('upload-error');
+    if (!imgF || !state.imgSide) {
+      if (errEl) { errEl.textContent = currentLang === 'fr' ? 'Veuillez envoyer les deux photos (face et profil).' : 'Please upload both photos (front and side).'; errEl.classList.remove('hidden'); }
+      return;
+    }
+    if (!lf) {
+      if (errEl) { errEl.textContent = currentLang === 'fr' ? 'Attendez la détection des points du visage, ou utilisez une photo de face plus claire.' : 'Wait for face points to appear, or use a clearer front photo.'; errEl.classList.remove('hidden'); }
+      return;
+    }
+    if (errEl) { errEl.textContent = ''; errEl.classList.add('hidden'); }
     const imgFW = imgF.width, imgFH = imgF.height;
     const imgSW = imgS ? imgS.width : 0, imgSH = imgS ? imgS.height : 0;
     const measurements = computeMeasurements(lf, ls, imgFW, imgFH, imgSW, imgSH);
