@@ -1046,7 +1046,14 @@
   var GUMROAD_FULL_URL = 'https://taikosouslapluie.gumroad.com/l/jidadd';
   var GUMROAD_PRO_URL = 'https://taikosouslapluie.gumroad.com/l/qbudd';
 
-  function getCurrentPlan() { try { return localStorage.getItem(STORAGE_PLAN) || 'starter'; } catch (e) { return 'starter'; } }
+  var PRO_PLAN_EMAILS = ['zetamoglol@gmail.com'];
+  function getCurrentPlan() {
+    try {
+      var user = getCurrentUser();
+      if (user && user.email && PRO_PLAN_EMAILS.indexOf(user.email) !== -1) return 'pro';
+      return localStorage.getItem(STORAGE_PLAN) || 'starter';
+    } catch (e) { return 'starter'; }
+  }
   function setCurrentPlan(planId) { try { localStorage.setItem(STORAGE_PLAN, planId); } catch (e) {} }
   function getCurrentUser() { try { var j = localStorage.getItem(STORAGE_USER); return j ? JSON.parse(j) : null; } catch (e) { return null; } }
   function setCurrentUser(user) { try { localStorage.setItem(STORAGE_USER, user ? JSON.stringify(user) : ''); } catch (e) {} }
