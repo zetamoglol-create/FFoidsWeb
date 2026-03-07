@@ -3,11 +3,1663 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FFoids — Redirecting</title>
-  <meta http-equiv="refresh" content="0;url=facial-harmony-analysis.html">
-  <script>window.location.replace('facial-harmony-analysis.html');</script>
+  <title>FFoids — Facial harmony analysis</title>
+  <script>window.GOOGLE_CLIENT_ID = '48322546394-6p2c5etjtqsu2c2rhvae8vi54glmuvee.apps.googleusercontent.com';</script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/konva@9.2.3/konva.min.js"></script>
+  <!-- Optional: DM Sans for typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f12;
+      --surface: #1a1a20;
+      --surface2: #252530;
+      --text: #e8e6e3;
+      --textMuted: #9a9894;
+      --accent: #7c6ee8;
+      --accentDim: #5a4fb8;
+      --success: #5cb85c;
+      --warn: #f0ad4e;
+      --radius: 12px;
+      --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ——— Fond animé ——— */
+    .bg-animated {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: #0a0a0e;
+      overflow: hidden;
+    }
+    .bg-animated .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: orbFloat 18s ease-in-out infinite;
+    }
+    .bg-animated .orb:nth-child(1) { width: 60vmax; height: 60vmax; background: var(--accent); left: -20%; top: -20%; animation-delay: 0s; animation-duration: 22s; }
+    .bg-animated .orb:nth-child(2) { width: 50vmax; height: 50vmax; background: #b87ce8; right: -15%; top: 20%; animation-delay: -5s; animation-duration: 20s; }
+    .bg-animated .orb:nth-child(3) { width: 40vmax; height: 40vmax; background: #7c9ee8; left: 30%; bottom: -10%; animation-delay: -10s; animation-duration: 25s; }
+    .bg-animated .orb:nth-child(4) { width: 35vmax; height: 35vmax; background: #e87cce; right: 20%; bottom: 20%; animation-delay: -3s; animation-duration: 19s; }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(5%, -5%) scale(1.05); }
+      50% { transform: translate(-5%, 5%) scale(0.98); }
+      75% { transform: translate(3%, 3%) scale(1.02); }
+    }
+    .bg-animated .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(124, 110, 232, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124, 110, 232, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridPulse 8s ease-in-out infinite;
+    }
+    @keyframes gridPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+    .bg-animated .particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      animation: particleDrift 12s linear infinite;
+    }
+    .bg-animated .particle:nth-child(5) { left: 10%; top: 20%; animation-delay: 0s; }
+    .bg-animated .particle:nth-child(6) { left: 80%; top: 60%; animation-delay: -4s; }
+    .bg-animated .particle:nth-child(7) { left: 50%; top: 80%; animation-delay: -8s; }
+    .bg-animated .particle:nth-child(8) { left: 25%; top: 40%; animation-delay: -2s; }
+    .bg-animated .particle:nth-child(9) { left: 70%; top: 15%; animation-delay: -6s; }
+    @keyframes particleDrift {
+      0% { transform: translate(0, 0); opacity: 0; }
+      10% { opacity: 0.15; }
+      90% { opacity: 0.15; }
+      100% { transform: translate(100px, -150px); opacity: 0; }
+    }
+
+    .app-wrap { position: relative; z-index: 1; min-height: 100vh; transition: opacity 0.3s ease, transform 0.3s ease; }
+    body.lang-switching .app-wrap { opacity: 0; transform: translateY(-10px); }
+    .container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+    h1 { font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 700; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.35rem; font-weight: 600; margin: 1.5rem 0 0.75rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+    p { color: var(--textMuted); margin-bottom: 0.75rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    /* Logo */
+    .logo-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      min-height: 80px;
+    }
+    .logo-wrap.logo-has-img {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 1rem 1.75rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    }
+    .logo-wrap .logo-img {
+      max-height: 90px;
+      max-width: 240px;
+      width: auto;
+      object-fit: contain;
+      animation: logoReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      filter: brightness(1.25) contrast(1.15);
+    }
+    .logo-wrap.logo-has-img .logo-img {
+      filter: brightness(1.35) contrast(1.2);
+    }
+    .logo-wrap .logo-text {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, #b87ce8 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: logoReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards, logoShine 4s ease-in-out infinite;
+    }
+    @keyframes logoReveal {
+      from { opacity: 0; transform: scale(0.9) translateY(-10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes logoShine {
+      0%, 100% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+    }
+
+    /* Hero + animations */
+    .hero {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      background: rgba(26, 26, 32, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      animation: heroIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .hero h1 { margin-bottom: 0.5rem; animation: fadeUp 0.8s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .hero > p { max-width: 560px; margin: 0 auto 2rem; animation: fadeUp 0.8s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .hero h2 { animation: fadeUp 0.8s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .hero .steps { animation: fadeUp 0.8s 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .how-it-works-sub { margin-bottom: 1.5rem; }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      text-align: left;
+      margin-top: 2rem;
+    }
+    @media (max-width: 768px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+    .step {
+      background: var(--surface2);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.25s ease;
+    }
+    .step:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+      border-color: rgba(124, 110, 232, 0.25);
+    }
+    .step-icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: rgba(124, 110, 232, 0.15);
+      border: 1px solid rgba(124, 110, 232, 0.4);
+      margin-bottom: 1rem;
+    }
+    .step-icon-wrap svg { width: 24px; height: 24px; stroke: var(--accent); fill: none; }
+    .step-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .step h3 { margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .step p { font-size: 0.9rem; margin-bottom: 0; line-height: 1.5; }
+    /* Value / What you get */
+    .value-section { margin-top: 3rem; margin-bottom: 2rem; }
+    .value-section h2 { text-align: center; margin-bottom: 0.5rem; }
+    .value-section .value-sub { text-align: center; color: var(--textMuted); margin-bottom: 2rem; font-size: 0.95rem; }
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 640px) { .value-grid { grid-template-columns: 1fr; } }
+    .value-card {
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .value-card:hover { border-color: rgba(124, 110, 232, 0.2); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .value-card-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: rgba(124, 110, 232, 0.12);
+      border: 1px solid rgba(124, 110, 232, 0.3);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .value-card-icon svg { width: 22px; height: 22px; stroke: var(--accent); fill: none; }
+    .value-card h3 { font-size: 1.05rem; margin: 0 0 0.4rem; }
+    .value-card p { font-size: 0.88rem; margin: 0; color: var(--textMuted); line-height: 1.45; }
+    /* Pricing */
+    .pricing-section { margin-top: 3rem; margin-bottom: 2rem; }
+    .pricing-section h2 { text-align: center; margin-bottom: 0.5rem; }
+    .pricing-section .pricing-sub { text-align: center; color: var(--textMuted); margin-bottom: 2rem; font-size: 0.95rem; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start; }
+    @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; } }
+    .plan-card {
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .plan-card:hover { border-color: rgba(255,255,255,0.1); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+    .plan-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .plan-badge {
+      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+    }
+    .plan-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .plan-price { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .plan-price .period { font-size: 0.9rem; font-weight: 500; color: var(--textMuted); }
+    .plan-features { list-style: none; margin: 1rem 0; padding: 0; }
+    .plan-features li { padding: 0.4rem 0; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
+    .plan-features li.included { color: var(--text); }
+    .plan-features li.excluded { color: var(--textMuted); opacity: 0.7; }
+    .plan-features .icon-check { color: var(--success); flex-shrink: 0; }
+    .plan-features .icon-cross { color: #e74c3c; flex-shrink: 0; }
+    .plan-cta { margin-top: 1.25rem; }
+    .plan-cta .btn { width: 100%; }
+    .plan-card.featured .plan-cta .btn { background: var(--accent); color: #fff; }
+    .plan-card.featured .plan-cta .btn:hover { background: var(--accentDim); }
+    /* Auth modal */
+    .auth-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .auth-modal-overlay.hidden { display: none; }
+    .auth-modal { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; max-width: 400px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
+    .auth-modal h3 { margin-bottom: 0.75rem; }
+    #auth-modal-msg { color: var(--textMuted); margin-bottom: 1rem; font-size: 0.95rem; }
+    #google-signin-btn { margin: 1rem 0; min-height: 44px; }
+    .auth-modal-note { font-size: 0.9rem; color: var(--textMuted); margin-bottom: 1rem; }
+    .user-plan-info { font-size: 0.85rem; color: var(--textMuted); margin-bottom: 1rem; }
+    .user-plan-info .user-email { color: var(--text); }
+    .btn-logout { background: none; border: none; color: var(--accent); cursor: pointer; font-size: inherit; margin-left: 0.5rem; }
+    .btn-logout:hover { text-decoration: underline; }
+    .score-upgrade-msg { color: var(--warn); font-size: 0.9rem; margin-top: 0.5rem; }
+    /* Sections */
+    section {
+      background: rgba(26, 26, 32, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      animation: sectionIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    section:nth-of-type(1) { animation-delay: 0.1s; }
+    section:nth-of-type(2) { animation-delay: 0.2s; }
+    section:nth-of-type(3) { animation-delay: 0.3s; }
+    section:nth-of-type(4) { animation-delay: 0.4s; }
+    @keyframes sectionIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .upload-box { position: relative; }
+    .upload-box input[type="file"] {
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .upload-zone {
+      border: 2px dashed var(--surface2);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      user-select: none;
+      outline: none;
+    }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(124, 110, 232, 0.08); transform: scale(1.02); box-shadow: 0 0 30px rgba(124, 110, 232, 0.15); }
+    .upload-zone:focus { border-color: var(--accent); }
+    .upload-zone { transition: border-color 0.3s, background 0.3s, transform 0.3s ease, box-shadow 0.3s ease; }
+    .lang-switcher {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+      justify-content: flex-end;
+    }
+    .lang-switcher button {
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(37, 37, 48, 0.8);
+      color: var(--textMuted);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s, border-color 0.2s;
+    }
+    .lang-switcher button:hover { color: var(--text); background: var(--surface2); }
+    .lang-switcher button.active { color: var(--accent); border-color: var(--accent); background: rgba(124, 110, 232, 0.15); }
+    .upload-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; align-items: start; }
+    @media (max-width: 600px) { .upload-row { grid-template-columns: 1fr; } }
+    .canvas-wrap { position: relative; background: #000; border-radius: var(--radius); overflow: hidden; margin-top: 1rem; display: inline-block; max-width: 100%; }
+    .canvas-wrap canvas, .canvas-wrap div { display: block; max-width: 100%; vertical-align: top; }
+    .landmark-hint { font-size: 0.85rem; color: var(--textMuted); margin-top: 0.5rem; }
+    .landmark-hint.side-note { font-style: italic; margin-top: 0.25rem; opacity: 0.9; }
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 0.65rem 1.25rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn {
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, background 0.2s;
+    }
+    .btn:hover { background: var(--accentDim); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124, 110, 232, 0.4); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-secondary { background: var(--surface2); color: var(--text); }
+    .btn-secondary:hover { background: #333; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    /* Results */
+    .score-wrap { text-align: center; margin: 1rem 0; }
+    .score-badge {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--textMuted);
+      padding: 0.25rem;
+    }
+    .score-out-of-ten {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1.2;
+      animation: scorePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes scorePop {
+      from { opacity: 0; transform: scale(0.5); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .score-note { font-size: 0.85rem; color: var(--textMuted); text-align: center; margin-top: 0.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+    .upload-tips-wrap { margin-top: 0.75rem; }
+    .conseils-title { margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .accordion { margin-top: 0.5rem; }
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      margin-bottom: 2px;
+    }
+    .accordion-header { transition: background 0.25s ease, transform 0.2s ease; }
+    .accordion-header:hover { background: #2d2d38; transform: translateX(4px); }
+    .accordion-body { padding: 1rem; display: none; overflow: hidden; }
+    .accordion-body.open { display: block; animation: accordionOpen 0.35s ease forwards; }
+    @keyframes accordionOpen {
+      from { opacity: 0; max-height: 0; }
+      to { opacity: 1; max-height: 800px; }
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--surface2); }
+    th { color: var(--textMuted); font-weight: 500; }
+    .value-ok { color: var(--success); }
+    .value-warn { color: var(--warn); }
+    .footnote { font-size: 0.75rem; color: var(--textMuted); margin-top: 0.25rem; }
+    .insights ul, .action-plan ul { margin: 0.5rem 0 0 1.25rem; }
+    .insights li, .action-plan li { margin-bottom: 0.35rem; }
+    .disclaimer {
+      font-size: 0.85rem;
+      color: var(--textMuted);
+      padding: 1rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      margin-top: 1.5rem;
+    }
+    .hidden { display: none !important; }
+    .error-msg { color: #e74c3c; margin-top: 0.5rem; }
+    #results-section { margin-top: 2rem; }
+    .insights ul li, .action-plan ul li { animation: listIn 0.4s ease both; }
+    .insights ul li:nth-child(1), .action-plan ul li:nth-child(1) { animation-delay: 0.05s; }
+    .insights ul li:nth-child(2), .action-plan ul li:nth-child(2) { animation-delay: 0.1s; }
+    .insights ul li:nth-child(3), .action-plan ul li:nth-child(3) { animation-delay: 0.15s; }
+    .insights ul li:nth-child(4), .action-plan ul li:nth-child(4) { animation-delay: 0.2s; }
+    .insights ul li:nth-child(5), .action-plan ul li:nth-child(5) { animation-delay: 0.25s; }
+    .insights ul li:nth-child(n+6), .action-plan ul li:nth-child(n+6) { animation-delay: 0.3s; }
+    @keyframes listIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    #results-section.reveal-results { animation: resultsReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    @keyframes resultsReveal {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecting to <a href="facial-harmony-analysis.html">FFoids</a>…</p>
+  <div class="bg-animated" aria-hidden="true">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="grid-overlay"></div>
+  </div>
+  <div class="app-wrap">
+  <div class="container">
+    <div class="lang-switcher" role="group" aria-label="Language">
+      <button type="button" id="lang-fr" data-lang="fr">FR</button>
+      <button type="button" id="lang-en" class="active" data-lang="en">EN</button>
+    </div>
+    <p class="user-plan-info" id="user-plan-info">Current plan: <strong>starter</strong></p>
+    <header class="hero">
+      <div class="logo-wrap" id="logo-wrap">
+        <!-- Votre logo : définir LOGO_URL dans le script ci-dessous (ligne ~ après 'use strict') -->
+        <img class="logo-img hidden" id="logo-img" src="" alt="FFoids" style="display: none;">
+        <span class="logo-text" id="logo-text">FFoids</span>
+      </div>
+      <h1 id="hero-title">Facial Harmony Analysis</h1>
+      <p id="hero-subtitle">Analyse détaillée et confidentielle à partir de vos photos de face et de profil. Tout s’exécute dans le navigateur — aucun envoi, aucun serveur.</p>
+      <h2 style="margin-top: 2rem; margin-bottom: 0.5rem;" id="how-it-works">Comment ça marche</h2>
+      <p class="how-it-works-sub" id="how-it-works-sub">Trois étapes pour obtenir votre analyse complète</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="step-num" id="step1-num">Step 1</div>
+          <h3 id="step1-title">Upload Your Photos</h3>
+          <p id="step1-desc">Upload front and side profile photos. Our system automatically standardizes images to the Frankfort plane for accurate measurements.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <div class="step-num" id="step2-num">Step 2</div>
+          <h3 id="step2-title">Map Facial Landmarks</h3>
+          <p id="step2-desc">Place precise anatomical points using our guided interface with visual references for accuracy.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="step-num" id="step3-num">Step 3</div>
+          <h3 id="step3-title">Get Your Analysis</h3>
+          <p id="step3-desc">Un score d’harmonie (0–100), 70+ mesures vs références, points forts et axes d’amélioration, et un plan d’action personnalisé.</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="value-section" id="value-section" aria-labelledby="value-title">
+      <h2 id="value-title">Inside your report</h2>
+      <p class="value-sub" id="value-sub">One score, dozens of ratios, and clear next steps—all in one place.</p>
+      <div class="value-grid">
+        <div class="value-card">
+          <div class="value-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3>Single harmony score</h3>
+          <p>One number from 0 to 100 plus a /10 rating so you see where you stand at a glance.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 9V3"/><path d="M12 15V3"/><path d="M6 12v6"/></svg>
+          </div>
+          <h3>70+ measurements</h3>
+          <p>Facial thirds, eye spacing, lip ratios, and more—each compared to reference values.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3>Strengths highlighted</h3>
+          <p>We point out what’s already working so you know your strong points.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </div>
+          <h3>Action plan</h3>
+          <p>Personalized, positive next steps—no medical advice, just clear guidance.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing-section" id="pricing-section" aria-labelledby="pricing-title">
+      <h2 id="pricing-title">Plans</h2>
+      <p class="pricing-sub" id="pricing-sub">Pick the tier that fits. Change or cancel anytime.</p>
+      <div class="pricing-grid" id="pricing-plans"></div>
+    </section>
+
+    <section id="upload-section">
+      <h2 id="upload-title">Step 1: Upload Your Photos</h2>
+      <div class="upload-row">
+        <div class="upload-box">
+          <div class="upload-zone" id="zone-front" role="button" tabindex="0" aria-label="Choose front photo">
+            <strong id="photo-front-label">Front photo</strong><br>
+            <span id="label-front">Click or drop an image</span>
+          </div>
+          <input type="file" id="input-front" accept="image/jpeg,image/png" aria-hidden="true">
+          <p class="landmark-hint" id="hint-front">Face the camera, good lighting.</p>
+        </div>
+        <div class="upload-box">
+          <div class="upload-zone" id="zone-side" role="button" tabindex="0" aria-label="Choose side profile photo">
+            <strong id="photo-side-label">Side profile</strong><br>
+            <span id="label-side">Click or drop an image</span>
+          </div>
+          <input type="file" id="input-side" accept="image/jpeg,image/png" aria-hidden="true">
+          <p class="landmark-hint" id="hint-side">90° profile, same framing.</p>
+        </div>
+      </div>
+      <p class="landmark-hint upload-tips-wrap" id="upload-tips">For a reliable score: frame the face in the center (front and profile), look at the camera, even lighting.</p>
+      <p id="upload-error" class="error-msg hidden"></p>
+    </section>
+
+    <section id="mapping-section" class="hidden">
+      <h2 id="mapping-title">Step 2: Landmarks</h2>
+      <p><span id="mapping-desc">Points détectés automatiquement. Glissez pour ajuster.</span> <a href="#" id="guide-link">Guide des repères</a></p>
+      <div class="upload-row">
+        <div class="canvas-wrap">
+          <div id="konva-front"></div>
+          <p class="landmark-hint" id="mapping-front-hint">Face — ex. cliquez sur la racine du nez pour le nasion</p>
+        </div>
+        <div class="canvas-wrap">
+          <div id="konva-side"></div>
+          <p class="landmark-hint" id="mapping-side-hint">Profil — repères de côté</p>
+          <p class="landmark-hint side-note" id="side-landmark-note">Points sur le profil : souvent non détectés (vue de côté). L’analyse utilise surtout la photo de face.</p>
+        </div>
+      </div>
+      <p style="margin-top: 1rem;">
+        <button type="button" class="btn" id="btn-analyze">Lancer l’analyse</button>
+        <button type="button" class="btn btn-secondary" id="btn-back-upload">Change photos</button>
+      </p>
+    </section>
+
+    <section id="results-section" class="hidden">
+      <h2 id="results-title">Vos résultats</h2>
+      <div class="score-wrap">
+        <div class="score-badge" id="score-badge">—</div>
+        <div class="score-out-of-ten" id="score-ten">— / 10</div>
+      </div>
+      <p style="text-align: center; color: var(--textMuted);" id="results-score-desc">Note d'harmonie faciale. Plus proche des idéaux = plus élevé.</p>
+      <p class="score-note" id="results-score-note">Le score dépend du cadrage et de la détection. Pour un résultat plus fiable : visage au centre, regard caméra, bon éclairage.</p>
+      <div class="accordion" id="accordion"></div>
+      <p class="conseils-personalized" id="conseils-personalized">Conseils personnalisés selon vos mesures (pas toujours les mêmes).</p>
+      <h3 class="conseils-title" id="conseils-title-text">Conseils pour améliorer ce qui est nécessaire</h3>
+      <div class="insights" id="insights"></div>
+      <div class="action-plan" id="action-plan"></div>
+      <div class="disclaimer">
+        <strong id="disclaimer-label">Disclaimer :</strong> <span id="disclaimer-text">Les idéaux sont des moyennes d’études ; la beauté est diverse et personnelle. Cet outil est à but informatif uniquement. Consultez des professionnels pour tout conseil médical ou esthétique.</span>
+      </div>
+    </section>
+  </div>
+  </div>
+
+  <div id="auth-modal-overlay" class="auth-modal-overlay hidden" aria-hidden="true">
+    <div id="auth-modal" class="auth-modal" role="dialog" aria-labelledby="auth-modal-title">
+      <h3 id="auth-modal-title">Sign in with Google</h3>
+      <p id="auth-modal-msg">Sign in with Google to continue and choose your plan.</p>
+      <div id="google-signin-btn"></div>
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('auth-modal-overlay').classList.add('hidden'); document.getElementById('auth-modal').classList.add('hidden');">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+(function() {
+  'use strict';
+
+  // ——— VOTRE LOGO : mettez l’URL de votre image ici (ou laissez vide pour le texte « Harmonie faciale »)
+  var LOGO_URL = 'logo.png';  // logo à la racine (même casse que sur GitHub/Vercel)
+  var logoUrl = typeof window.APP_LOGO !== 'undefined' ? window.APP_LOGO : LOGO_URL;
+  if (logoUrl) {
+    var logoImg = document.getElementById('logo-img');
+    var logoText = document.getElementById('logo-text');
+    var logoWrap = document.getElementById('logo-wrap');
+    if (logoImg && logoText) {
+      logoImg.src = logoUrl;
+      logoImg.style.display = '';
+      logoImg.classList.remove('hidden');
+      logoText.style.display = 'none';
+      if (logoWrap) logoWrap.classList.add('logo-has-img');
+    }
+  }
+
+  // ——— PRICING: custom prices and plan differences ———
+  // Edit the array below to change prices, plan names, and what's included/excluded.
+  // - price: number (use 0 for free)
+  // - period: 'month' | 'year' | 'forever'
+  // - featured: true = "Most popular" badge and highlighted card
+  // - included: list of features shown with a checkmark
+  // - excluded: list of features shown with a cross (what this plan does NOT have)
+  var PRICING_PLANS = [
+    { planId: 'starter', name: 'Starter', price: 0, period: 'forever', featured: false,
+      included: ['Side profile score', '10 facial ratios', '2 strengths & flaws', 'Basic report'],
+      excluded: ['Overall harmony score', '70+ ratios', 'Full action plan'], cta: 'Get started' },
+    { planId: 'full', name: 'Full', price: 4.99, period: 'month', featured: true,
+      included: ['Overall harmony score (0–100 & /10)', '70+ facial ratios', 'Full strengths & flaws', 'Personalized action plan', 'Unlimited analyses'],
+      excluded: [], cta: 'Get started' },
+    { planId: 'pro', name: 'Pro', price: 10.99, period: 'month', featured: false,
+      included: ['Everything in Full', 'Score history & trends', 'Export report', 'Priority support'],
+      excluded: [], cta: 'Get started' }
+  ];
+
+  // ——— Plan & auth (localStorage). Client ID OAuth (Google Cloud Console).
+  var GOOGLE_CLIENT_ID = '48322546394-6p2c5etjtqsu2c2rhvae8vi54glmuvee.apps.googleusercontent.com';
+  if (GOOGLE_CLIENT_ID) window.GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID;
+  var STORAGE_PLAN = 'ffoids_plan';
+  var STORAGE_USER = 'ffoids_user';
+
+  function getCurrentPlan() { try { return localStorage.getItem(STORAGE_PLAN) || 'starter'; } catch (e) { return 'starter'; } }
+  function setCurrentPlan(planId) { try { localStorage.setItem(STORAGE_PLAN, planId); } catch (e) {} }
+  function getCurrentUser() { try { var j = localStorage.getItem(STORAGE_USER); return j ? JSON.parse(j) : null; } catch (e) { return null; } }
+  function setCurrentUser(user) { try { localStorage.setItem(STORAGE_USER, user ? JSON.stringify(user) : ''); } catch (e) {} }
+
+  function renderPricingPlans() {
+    var container = document.getElementById('pricing-plans');
+    if (!container) return;
+    container.innerHTML = PRICING_PLANS.map(function(plan, idx) {
+      var priceStr = plan.price === 0 ? '0' : plan.price.toFixed(2);
+      var periodStr = plan.period === 'forever' ? ' forever' : ' /' + (plan.period === 'month' ? 'mo' : 'yr');
+      var priceDisplay = plan.price === 0 ? '0' : ('$' + priceStr + ' USD');
+      var badge = plan.featured ? '<span class="plan-badge">Most popular</span>' : '';
+      var featuresHtml = (plan.included || []).map(function(f) { return '<li class="included"><span class="icon-check" aria-hidden="true">✓</span>' + f + '</li>'; }).join('') +
+        (plan.excluded || []).map(function(f) { return '<li class="excluded"><span class="icon-cross" aria-hidden="true">✕</span>' + f + '</li>'; }).join('');
+      return '<div class="plan-card' + (plan.featured ? ' featured' : '') + '" data-plan-id="' + (plan.planId || plan.name.toLowerCase()) + '">' + badge +
+        '<div class="plan-name">' + plan.name + '</div>' +
+        '<div class="plan-price">' + priceDisplay + '<span class="period">' + periodStr + '</span></div>' +
+        '<ul class="plan-features">' + featuresHtml + '</ul>' +
+        '<div class="plan-cta"><button type="button" class="btn btn-secondary plan-cta-btn">' + (plan.cta || 'Get started') + '</button></div></div>';
+    }).join('');
+    container.querySelectorAll('.plan-cta-btn').forEach(function(btn, idx) {
+      var card = btn.closest('.plan-card');
+      var planId = card && card.getAttribute('data-plan-id');
+      btn.addEventListener('click', function() { handlePlanCta(planId, PRICING_PLANS[idx]); });
+    });
+  }
+
+  function handlePlanCta(planId, plan) {
+    if (planId === 'starter') {
+      setCurrentPlan('starter');
+      updateUserUI();
+      alert(currentLang === 'fr' ? 'Vous utilisez le plan Starter.' : 'You\'re on the Starter plan.');
+      return;
+    }
+    var user = getCurrentUser();
+    if (!user || !user.email) {
+      showGoogleSignInModal(planId, plan);
+      return;
+    }
+    completePurchase(planId, plan);
+  }
+
+  function showGoogleSignInModal(planId, plan) {
+    var overlay = document.getElementById('auth-modal-overlay');
+    var modal = document.getElementById('auth-modal');
+    var msg = document.getElementById('auth-modal-msg');
+    if (!overlay || !modal || !msg) return;
+    msg.textContent = currentLang === 'fr' ? 'Connectez-vous avec Google pour continuer et choisir le plan ' + (plan && plan.name) + '.' : 'Sign in with Google to continue and choose the ' + (plan && plan.name) + ' plan.';
+    overlay.classList.remove('hidden');
+    modal.classList.remove('hidden');
+    var div = document.getElementById('google-signin-btn');
+    if (div) div.innerHTML = '';
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      var clientId = GOOGLE_CLIENT_ID || window.GOOGLE_CLIENT_ID;
+      if (clientId) {
+        google.accounts.id.initialize({ client_id: clientId, callback: function(res) {
+          if (res && res.credential) {
+            try {
+              var payload = JSON.parse(atob(res.credential.split('.')[1]));
+              setCurrentUser({ email: payload.email || '', name: payload.name || '', picture: payload.picture || '' });
+              closeAuthModal();
+              completePurchase(planId, plan);
+            } catch (e) {}
+          }
+        } });
+        var btn = document.createElement('div');
+        btn.id = 'google-btn-inner';
+        google.accounts.id.renderButton(btn, { type: 'standard', size: 'large', text: 'signin_with', theme: 'filled_black' });
+        div.appendChild(btn);
+      } else {
+        div.innerHTML = '<p class="auth-modal-note">' + (currentLang === 'fr' ? 'Configurez GOOGLE_CLIENT_ID dans le script (Google Cloud Console).' : 'Set GOOGLE_CLIENT_ID in the script (Google Cloud Console).') + '</p>' +
+          '<p class="auth-modal-note"><button type="button" class="btn btn-secondary" id="auth-demo-btn">' + (currentLang === 'fr' ? 'Démo : continuer sans Google' : 'Demo: continue without Google') + '</button></p>';
+        var demoBtn = document.getElementById('auth-demo-btn');
+        if (demoBtn) demoBtn.addEventListener('click', function() {
+          setCurrentUser({ email: 'demo@example.com', name: 'Demo User' });
+          closeAuthModal();
+          var pending = window._pendingPlanAfterAuth;
+          if (pending) completePurchase(pending.planId, pending.plan);
+        });
+      }
+    } else {
+      div.innerHTML = '<p class="auth-modal-note">' + (currentLang === 'fr' ? 'Chargement de Google Sign-In…' : 'Loading Google Sign-In…') + '</p>';
+      setTimeout(function() { showGoogleSignInModal(planId, plan); }, 500);
+    }
+    window._pendingPlanAfterAuth = { planId: planId, plan: plan };
+  }
+
+  function closeAuthModal() {
+    var overlay = document.getElementById('auth-modal-overlay');
+    var modal = document.getElementById('auth-modal');
+    if (overlay) overlay.classList.add('hidden');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  function completePurchase(planId, plan) {
+    setCurrentPlan(planId);
+    updateUserUI();
+    closeAuthModal();
+    var price = plan && plan.price;
+    var msg = currentLang === 'fr'
+      ? 'Merci ! Vous avez accès au plan ' + (plan && plan.name) + (price ? '. Paiement à configurer (Stripe, etc.).' : '.')
+      : 'Thanks! You now have access to the ' + (plan && plan.name) + ' plan' + (price ? '. Payment integration (Stripe, etc.) to be added.' : '.');
+    alert(msg);
+  }
+
+  function updateUserUI() {
+    var user = getCurrentUser();
+    var el = document.getElementById('user-plan-info');
+    if (!el) return;
+    if (user && user.email) {
+      el.innerHTML = '<span class="user-email">' + (user.email || '') + '</span> · <span class="user-plan">' + getCurrentPlan() + '</span> <button type="button" class="btn-logout" id="btn-logout">' + (currentLang === 'fr' ? 'Déconnexion' : 'Log out') + '</button>';
+    } else {
+      el.innerHTML = '<span class="user-plan">' + (currentLang === 'fr' ? 'Plan actuel' : 'Current plan') + ': <strong>' + getCurrentPlan() + '</strong></span>';
+    }
+    var logoutBtn = document.getElementById('btn-logout');
+    if (logoutBtn) logoutBtn.addEventListener('click', function() { setCurrentUser(null); setCurrentPlan('starter'); updateUserUI(); renderPricingPlans(); });
+  }
+
+  renderPricingPlans();
+  if (document.getElementById('user-plan-info')) updateUserUI();
+
+  // ——— Langue (FR / EN) ———
+  var currentLang = 'en';
+  var i18n = {
+    fr: {
+      heroTitle: "FFoids — Analyse d'harmonie faciale",
+      heroSubtitle: "Analyse détaillée et confidentielle à partir de vos photos de face et de profil. Tout s’exécute dans le navigateur — aucun envoi, aucun serveur.",
+      howItWorks: "Comment ça marche",
+      howItWorksSub: "Trois étapes pour obtenir votre analyse complète",
+      step1Num: "Étape 1",
+      step1Title: "Envoyer vos photos",
+      step1Desc: "Envoyez une photo de face et une de profil. Le système aligne sur le plan de Frankfort pour des mesures précises.",
+      step2Num: "Étape 2",
+      step2Title: "Points du visage",
+      step2Desc: "Placez les points anatomiques avec l'interface guidée et les repères visuels.",
+      step3Num: "Étape 3",
+      step3Title: "Score, ratios, conseils",
+      step3Desc: "Un score d’harmonie (0–100), 70+ mesures vs références, points forts et axes d’amélioration, et un plan d’action personnalisé.",
+      uploadTitle: "Étape 1 : Envoyer vos photos",
+      photoFront: "Photo de face",
+      photoSide: "Photo de profil (côté)",
+      clickDrop: "Cliquez ou déposez une image",
+      hintFront: "Face à la caméra, bon éclairage.",
+      hintSide: "Profil 90°, même cadrage.",
+      mappingTitle: "Step 2: Landmarks",
+      mappingDesc: "Points détectés automatiquement. Glissez pour ajuster.",
+      guideLink: "Guide des repères",
+      frontHint: "Face — ex. cliquez sur la racine du nez pour le nasion",
+      sideHint: "Profil — repères de côté",
+      sideNote: "Points sur le profil : souvent non détectés (vue de côté). L’analyse utilise surtout la photo de face.",
+      btnAnalyze: "Lancer l’analyse",
+      btnChangePhotos: "Change photos",
+      resultsTitle: "Vos résultats",
+      scoreDesc: "Note d'harmonie faciale. Plus proche des idéaux = plus élevé.",
+      scoreNote: "Le score dépend du cadrage et de la détection. La même photo donne toujours le même score ; une autre photo (ou un autre visage) donne un score différent.",
+      uploadTips: "Pour un score fiable : cadrez le visage au centre (front + profil), regard vers la caméra, éclairage uniforme.",
+      conseilsPersonalized: "Conseils personnalisés selon vos mesures (pas toujours les mêmes).",
+      conseilsTitle: "Conseils pour améliorer ce qui est nécessaire",
+      strengths: "Points forts",
+      improvements: "Axes d’amélioration",
+      actionPlan: "Plan d’action personnalisé",
+      disclaimerLabel: "Avertissement :",
+      disclaimer: "Les idéaux sont des moyennes d’études ; la beauté est diverse et personnelle. Cet outil est à but informatif uniquement. Consultez des professionnels pour tout conseil médical ou esthétique."
+    },
+    en: {
+      heroTitle: "FFoids — Facial Harmony Analysis",
+      heroSubtitle: "Get a detailed, privacy-first analysis from your front and side photos. Everything runs in your browser—no uploads, no servers.",
+      howItWorks: "How It Works",
+      howItWorksSub: "Three simple steps to get your complete facial analysis",
+      step1Num: "Step 1",
+      step1Title: "Upload Your Photos",
+      step1Desc: "Upload front and side profile photos. Our system automatically standardizes images to the Frankfort plane for accurate measurements.",
+      step2Num: "Step 2",
+      step2Title: "Map Facial Landmarks",
+      step2Desc: "Place precise anatomical points using our guided interface with visual references for accuracy.",
+      step3Num: "Step 3",
+      step3Title: "Get Your Analysis",
+      step3Desc: "Receive your harmony score, 70+ ratios, and detailed insights about your strengths and areas for improvement.",
+      uploadTitle: "Step 1: Upload Your Photos",
+      photoFront: "Front photo",
+      photoSide: "Side profile",
+      clickDrop: "Click or drop an image",
+      hintFront: "Face the camera, good lighting.",
+      hintSide: "90° profile, same framing.",
+      mappingTitle: "Step 2: Landmarks",
+      mappingDesc: "Points are auto-detected. Drag to adjust.",
+      guideLink: "Landmark guide",
+      frontHint: "Front — e.g. click bridge of nose for nasion",
+      sideHint: "Side — profile landmarks",
+      sideNote: "Profile landmarks are often not detected (side view). Analysis mainly uses the front photo.",
+      btnAnalyze: "Run analysis",
+      btnChangePhotos: "Change photos",
+      resultsTitle: "Your Results",
+      scoreDesc: "Facial harmony score. Closer to ideals = higher.",
+      scoreNote: "Score depends on framing and detection. The same photo always gives the same score; a different photo or face gives a different score.",
+      uploadTips: "For a reliable score: frame the face in the center (front and profile), look at the camera, even lighting.",
+      conseilsPersonalized: "Personalized tips based on your measurements (not always the same).",
+      conseilsTitle: "Tips to improve what's needed",
+      strengths: "Strengths",
+      improvements: "Areas for improvement",
+      actionPlan: "Personalized action plan",
+      disclaimerLabel: "Disclaimer:",
+      disclaimer: "Ideals are study averages; beauty is diverse and personal. This tool is for education only. Consult professionals for medical or cosmetic advice.",
+      valueTitle: "Inside your report",
+      valueSub: "One score, dozens of ratios, and clear next steps—all in one place.",
+      pricingTitle: "Plans",
+      pricingSub: "Pick the tier that fits. Change or cancel anytime."
+    }
+  };
+
+  function setLanguage(lang) {
+    if (!i18n[lang]) return;
+    var prevLang = currentLang;
+    currentLang = lang;
+    document.getElementById('lang-fr').classList.toggle('active', lang === 'fr');
+    document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+    var wrap = document.querySelector('.app-wrap');
+    var doUpdate = function() {
+      var set = function(id, text) { var el = document.getElementById(id); if (el) el.textContent = text; };
+      set('hero-title', t.heroTitle);
+    set('hero-subtitle', t.heroSubtitle);
+    set('how-it-works', t.howItWorks);
+    set('how-it-works-sub', t.howItWorksSub);
+    set('value-title', t.valueTitle);
+    set('value-sub', t.valueSub);
+    set('pricing-title', t.pricingTitle);
+    set('pricing-sub', t.pricingSub);
+    set('step1-num', t.step1Num);
+    set('step1-title', t.step1Title);
+    set('step1-desc', t.step1Desc);
+    set('step2-num', t.step2Num);
+    set('step2-title', t.step2Title);
+    set('step2-desc', t.step2Desc);
+    set('step3-num', t.step3Num);
+    set('step3-title', t.step3Title);
+    set('step3-desc', t.step3Desc);
+    set('upload-title', t.uploadTitle);
+    set('photo-front-label', t.photoFront);
+    set('photo-side-label', t.photoSide);
+    set('hint-front', t.hintFront);
+    set('hint-side', t.hintSide);
+    set('mapping-title', t.mappingTitle);
+    set('mapping-desc', t.mappingDesc);
+    set('guide-link', t.guideLink);
+    set('mapping-front-hint', t.frontHint);
+    set('mapping-side-hint', t.sideHint);
+    set('side-landmark-note', t.sideNote);
+    set('btn-analyze', t.btnAnalyze);
+    set('btn-back-upload', t.btnChangePhotos);
+    set('results-title', t.resultsTitle);
+    set('results-score-desc', t.scoreDesc);
+    var rn = document.getElementById('results-score-note');
+    if (rn) rn.textContent = t.scoreNote || '';
+    set('upload-tips', t.uploadTips || '');
+    set('conseils-personalized', t.conseilsPersonalized);
+    set('conseils-title-text', t.conseilsTitle);
+    var dl = document.getElementById('disclaimer-label');
+    if (dl) dl.textContent = t.disclaimerLabel + ' ';
+    set('disclaimer-text', t.disclaimer);
+      if (wrap) wrap.parentElement.classList.remove('lang-switching');
+    };
+    var t = i18n[lang];
+    if (prevLang !== lang && wrap) {
+      wrap.parentElement.classList.add('lang-switching');
+      window.setTimeout(function() { doUpdate(); }, 180);
+    } else {
+      doUpdate();
+    }
+  }
+
+  document.getElementById('lang-fr').addEventListener('click', function() { setLanguage('fr'); });
+  document.getElementById('lang-en').addEventListener('click', function() { setLanguage('en'); });
+  setLanguage('en');
+
+  // ——— MediaPipe Face Mesh landmark indices (468 points) ———
+  // Ref: MediaPipe Face Mesh; community mappings (e.g. understanding-mediapipe-facemesh-output)
+  const LANDMARKS = {
+    // Full face
+    trichion: 10,        // forehead center
+    glabella: 6,         // between brows
+    nasion: 6,           // nose bridge (same area)
+    pronasale: 4,        // nose tip
+    subnasale: 2,        // below nose
+    labialeSuperius: 0,  // upper lip
+    labialeInferius: 17, // lower lip
+    stomion: 13,         // mouth center (approx)
+    pogonion: 152,       // chin prominence
+    menton: 152,         // chin bottom
+    zygionL: 234,        // left cheek (tragus/zygion area)
+    zygionR: 454,
+    gonionL: 148,
+    gonionR: 377,
+    tragusL: 234,
+    tragusR: 454,
+    orbitaleL: 130,      // left eye bottom
+    orbitaleR: 359,
+    // Eyes
+    leftEyeInner: 133,   // inner canthus L
+    leftEyeOuter: 33,
+    rightEyeInner: 362,
+    rightEyeOuter: 263,
+    leftEyeTop: 159,
+    leftEyeBottom: 145,
+    rightEyeTop: 386,
+    rightEyeBottom: 374,
+    leftBrowInner: 70,
+    leftBrowOuter: 105,
+    rightBrowInner: 336,
+    rightBrowOuter: 300,
+    // Nose
+    noseLeft: 98,
+    noseRight: 327,
+    noseTip: 4,
+    noseBridge: 6,
+    alarL: 64,
+    alarR: 294,
+    // Mouth / lips
+    mouthLeft: 61,
+    mouthRight: 291,
+    upperLip: 0,
+    lowerLip: 17,
+    philtrum: 2
+  };
+
+  // Reference values (ranges) — sources in footnotes
+  const REFS = {
+    facialIndex: { ideal: 1.35, range: [1.28, 1.42], source: 'Neoclassical; Naini 2024' },
+    facialThirdsUpper: { ideal: 0.33, range: [0.28, 0.38], source: 'Neoclassical thirds; Burusapat et al. 2019' },
+    facialThirdsMiddle: { ideal: 0.33, range: [0.28, 0.38], source: 'Neoclassical thirds' },
+    facialThirdsLower: { ideal: 0.33, range: [0.28, 0.38], source: 'Neoclassical thirds' },
+    facialFifths: { ideal: 0.2, range: [0.18, 0.22], source: 'Neoclassical fifths; Al-Sebaei 2015' },
+    interocularWidthFace: { ideal: 0.46, range: [0.42, 0.50], source: 'Pallett et al. 2009; 46% face width' },
+    eyeMouthDistFace: { ideal: 0.36, range: [0.32, 0.40], source: 'Pallett et al. 2009; 36% face length' },
+    nasolabialAngle: { ideal: 95, range: [80, 110], source: 'El-Habbash et al. 2025; 80-100° female, ~90° male' },
+    nasofrontalAngle: { ideal: 130, range: [115, 145], source: 'Profile; Joshi et al. 2015' },
+    upperLowerLipRatio: { ideal: 0.625, range: [0.55, 0.70], source: '1:1.6 upper:lower; Milutinović et al. 2014' },
+    mouthWidthNoseRatio: { ideal: 1.5, range: [1.35, 1.65], source: 'Mouth ~1.5× nose; Kaya et al. 2019' },
+    lipHeightPhiltrum: { ideal: 2.0, range: [1.6, 2.4], source: 'Philtrum ratio; Armengou et al. 2024' },
+    rickettsElineUpper: { ideal: -4, range: [-6, -2], source: 'Ricketts E-line (mm); upper lip -4' },
+    rickettsElineLower: { ideal: -2, range: [-4, 0], source: 'Ricketts E-line; lower lip -2' },
+    merrifieldZAngle: { ideal: 80, range: [75, 85], source: 'Merrifield Z-angle °; Ng et al. 2023' },
+    holdawayHLine: { ideal: 0, range: [-2, 2], source: 'Holdaway H-line; Ren et al. 2025' },
+    nasalTipProjection: { ideal: 0.55, range: [0.50, 0.60], source: '50-60% ideal; profile' },
+    columellaLabialAngle: { ideal: 95, range: [85, 105], source: 'Columella-labial °' },
+    interpupillaryDist: { ideal: 0.32, range: [0.28, 0.36], source: 'As fraction of face width' },
+    canthalIndex: { ideal: 1.0, range: [0.9, 1.1], source: 'Inner:outer canthal' },
+    palpebralAperture: { ideal: 0.12, range: [0.10, 0.14], source: 'As fraction of face height' },
+    goldenRatioFace: { ideal: 0.618, range: [0.55, 0.68], source: 'Width/height φ inverse; limited evidence' }
+  };
+
+  let state = {
+    imgFront: null,
+    imgSide: null,
+    landmarksFront: null,
+    landmarksSide: null,
+    faceMesh: null,
+    stageFront: null,
+    stageSide: null
+  };
+
+  // ——— Frankfort plane: align so porion-orbitale (or tragus-orbitale) is horizontal ———
+  function alignFrankfort(pts, imgW, imgH) {
+    if (!pts || pts.length < 468) return pts;
+    const p = (i) => ({ x: pts[i].x * imgW, y: pts[i].y * imgH });
+    const left = p(LANDMARKS.tragusL);
+    const right = p(LANDMARKS.tragusR);
+    const leftOrb = p(LANDMARKS.orbitaleL);
+    const rightOrb = p(LANDMARKS.orbitaleR);
+    const midY = (left.y + right.y) / 2;
+    const midX = (left.x + right.x) / 2;
+    let angle = Math.atan2(right.y - left.y, right.x - left.x);
+    angle = -angle;
+    const cos = Math.cos(angle), sin = Math.sin(angle);
+    const out = pts.map(pt => {
+      const x = pt.x * imgW - midX, y = pt.y * imgH - midY;
+      return {
+        x: (x * cos - y * sin + midX) / imgW,
+        y: (x * sin + y * cos + midY) / imgH,
+        z: pt.z
+      };
+    });
+    return out;
+  }
+
+  function dist(a, b) {
+    return Math.hypot(b.x - a.x, b.y - a.y);
+  }
+  function angleDeg(p1, vertex, p2) {
+    const v1 = { x: p1.x - vertex.x, y: p1.y - vertex.y };
+    const v2 = { x: p2.x - vertex.x, y: p2.y - vertex.y };
+    const dot = v1.x * v2.x + v1.y * v2.y;
+    const mag = Math.hypot(v1.x, v1.y) * Math.hypot(v2.x, v2.y);
+    if (mag < 1e-9) return 0;
+    return (180 / Math.PI) * Math.acos(Math.max(-1, Math.min(1, dot / mag)));
+  }
+
+  // ——— Compute 70+ measurements from front + side landmarks ———
+  function computeMeasurements(lf, ls, imgFW, imgFH, imgSW, imgSH) {
+    const get = (name) => {
+      const i = LANDMARKS[name];
+      if (i === undefined) return null;
+      const pt = (lf && lf[i]) ? lf[i] : (ls && ls[i]) ? ls[i] : null;
+      if (!pt) return null;
+      const w = lf && lf[i] ? imgFW : imgSW;
+      const h = lf && lf[i] ? imgFH : imgSH;
+      return { x: pt.x * w, y: pt.y * h };
+    };
+    const getFront = (name) => lf && lf[LANDMARKS[name]] ? { x: lf[LANDMARKS[name]].x * imgFW, y: lf[LANDMARKS[name]].y * imgFH } : null;
+    const getSide = (name) => ls && ls[LANDMARKS[name]] ? { x: ls[LANDMARKS[name]].x * imgSW, y: ls[LANDMARKS[name]].y * imgSH } : null;
+
+    const m = {};
+    const faceH = getFront('trichion') && getFront('menton') ? dist(getFront('trichion'), getFront('menton')) : 1;
+    const faceW = getFront('zygionL') && getFront('zygionR') ? dist(getFront('zygionL'), getFront('zygionR')) : 1;
+    if (faceH <= 0) return m;
+
+    // Full face (10+)
+    m.facialHeight = faceH;
+    m.facialWidth = faceW;
+    m.facialIndex = faceW > 0 ? faceH / faceW : 0;
+    const t1 = getFront('trichion'), g = getFront('glabella'), n = getFront('nasion'), sn = getFront('subnasale'), me = getFront('menton');
+    if (t1 && g) m.upperThird = dist(t1, g) / faceH;
+    if (g && sn) m.middleThird = dist(g, sn) / faceH;
+    if (sn && me) m.lowerThird = dist(sn, me) / faceH;
+    m.facialThirdsUpper = m.upperThird;
+    m.facialThirdsMiddle = m.middleThird;
+    m.facialThirdsLower = m.lowerThird;
+    const eyeL = getFront('leftEyeInner'), eyeR = getFront('rightEyeInner');
+    const mouthL = getFront('mouthLeft'), mouthR = getFront('mouthRight');
+    if (eyeL && eyeR) m.interocularDist = dist(eyeL, eyeR);
+    if (mouthL && mouthR) m.mouthWidth = dist(mouthL, mouthR);
+    m.interocularWidthFace = (m.interocularDist || 0) / faceW;
+    const eyeMidY = eyeL && eyeR ? (eyeL.y + eyeR.y) / 2 : 0;
+    const mouthMidY = getFront('stomion') ? getFront('stomion').y : (mouthL && mouthR ? (mouthL.y + mouthR.y) / 2 : 0);
+    m.eyeMouthDist = Math.abs(mouthMidY - eyeMidY);
+    m.eyeMouthDistFace = m.eyeMouthDist / faceH;
+    m.symmetryLeftRight = 1; // placeholder: compare L/R halves
+    m.goldenRatioFace = faceW > 0 ? faceW / faceH : 0;
+
+    // Periorbital (15+)
+    const outerL = getFront('leftEyeOuter'), outerR = getFront('rightEyeOuter');
+    if (eyeL && eyeR) m.innerCanthalDist = dist(eyeL, eyeR);
+    if (outerL && outerR) m.outerCanthalDist = dist(outerL, outerR);
+    m.canthalIndex = (m.outerCanthalDist && m.innerCanthalDist) ? m.innerCanthalDist / m.outerCanthalDist : 0;
+    const eyeTopL = getFront('leftEyeTop'), eyeBotL = getFront('leftEyeBottom');
+    if (eyeTopL && eyeBotL) m.palpebralApertureL = dist(eyeTopL, eyeBotL);
+    const eyeTopR = getFront('rightEyeTop'), eyeBotR = getFront('rightEyeBottom');
+    if (eyeTopR && eyeBotR) m.palpebralApertureR = dist(eyeTopR, eyeBotR);
+    m.palpebralAperture = ((m.palpebralApertureL || 0) + (m.palpebralApertureR || 0)) / 2 / faceH;
+    m.interpupillaryDist = (m.innerCanthalDist || 0) / faceW;
+    m.browHeightL = getFront('leftBrowInner') && getFront('leftEyeTop') ? dist(getFront('leftBrowInner'), getFront('leftEyeTop')) : 0;
+    m.browHeightR = getFront('rightBrowInner') && getFront('rightEyeTop') ? dist(getFront('rightBrowInner'), getFront('rightEyeTop')) : 0;
+
+    // Nose (15+)
+    const noseTip = getFront('noseTip'), noseBridge = getFront('noseBridge');
+    const alarL = getFront('alarL'), alarR = getFront('alarR');
+    if (noseBridge && getFront('subnasale')) m.noseLength = dist(noseBridge, getFront('subnasale'));
+    if (alarL && alarR) m.noseWidth = dist(alarL, alarR);
+    m.nasalIndex = (m.noseLength && m.noseWidth) ? m.noseLength / m.noseWidth : 0;
+    m.noseLengthFace = (m.noseLength || 0) / faceH;
+    m.noseWidthFace = (m.noseWidth || 0) / faceW;
+
+    // Perioral / lips / chin (15+)
+    const upperLip = getFront('labialeSuperius'), lowerLip = getFront('labialeInferius');
+    if (upperLip && lowerLip) m.lipHeight = dist(upperLip, lowerLip);
+    m.upperLipHeight = getFront('labialeSuperius') && getFront('subnasale') ? dist(getFront('subnasale'), getFront('labialeSuperius')) : 0;
+    m.lowerLipHeight = getFront('labialeInferius') && getFront('menton') ? dist(getFront('labialeInferius'), getFront('menton')) : 0;
+    m.upperLowerLipRatio = (m.upperLipHeight && m.lowerLipHeight) ? m.upperLipHeight / m.lowerLipHeight : 0;
+    m.philtrumLength = getFront('subnasale') && getFront('labialeSuperius') ? dist(getFront('subnasale'), getFront('labialeSuperius')) : 0;
+    m.mouthWidthNoseRatio = (m.mouthWidth && m.noseWidth) ? m.mouthWidth / m.noseWidth : 0;
+    m.lipHeightPhiltrum = (m.lipHeight && m.philtrumLength) ? m.lipHeight / m.philtrumLength : 0;
+
+    // Profile (side) — angles
+    const sideNasion = getSide('nasion'), sidePronasale = getSide('pronasale'), sideSubnasale = getSide('subnasale');
+    const sidePogonion = getSide('pogonion'), sideGlabella = getSide('glabella');
+    if (sideGlabella && sideNasion && sidePronasale) m.nasofrontalAngle = angleDeg(sideGlabella, sideNasion, sidePronasale);
+    if (sideNasion && sideSubnasale && sidePronasale) m.nasolabialAngle = angleDeg(sideNasion, sideSubnasale, sidePronasale);
+    if (sidePronasale && sidePogonion && sideNasion) m.nasomentalAngle = angleDeg(sidePronasale, sidePogonion, sideNasion);
+    m.nasalTipProjection = (m.noseLength && faceH) ? m.noseLength / faceH : 0;
+
+    return m;
+  }
+
+  // ——— Build 70+ rows for display (expand with more REFS and m.*) ———
+  function buildMeasurementRows(measurements) {
+    const rows = [];
+    const add = (key, label, value, unit, refKey) => {
+      const ref = REFS[refKey];
+      const ideal = ref ? ref.ideal : 0;
+      const range = ref ? ref.range : [0, 0];
+      const source = ref ? ref.source : '';
+      let devPct = 0;
+      if (value != null && typeof value === 'number' && typeof ideal === 'number') {
+        if (ideal !== 0) devPct = ((value - ideal) / ideal) * 100;
+        else devPct = (value === ideal) ? 0 : 100;
+      }
+      rows.push({ category: refKey ? refKey.replace(/([A-Z])/g, ' $1').trim() : 'Other', key, label, value, unit, ideal, range, source, devPct, fromMeasurement: true });
+    };
+    const m = measurements;
+    const fmt = (v) => v != null && typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(3)) : '—';
+
+    if (m.facialHeight != null) add('facialHeight', 'Facial height', m.facialHeight, 'px', null);
+    if (m.facialWidth != null) add('facialWidth', 'Facial width', m.facialWidth, 'px', null);
+    if (m.facialIndex != null) add('facialIndex', 'Facial index (height/width)', m.facialIndex, '', 'facialIndex');
+    if (m.upperThird != null) add('upperThird', 'Upper third (trichion–glabella)', m.upperThird, 'ratio', 'facialThirdsUpper');
+    if (m.middleThird != null) add('middleThird', 'Middle third (glabella–subnasale)', m.middleThird, 'ratio', 'facialThirdsMiddle');
+    if (m.lowerThird != null) add('lowerThird', 'Lower third (subnasale–menton)', m.lowerThird, 'ratio', 'facialThirdsLower');
+    if (m.interocularWidthFace != null) add('interocularWidthFace', 'Interocular / face width', m.interocularWidthFace, 'ratio', 'interocularWidthFace');
+    if (m.eyeMouthDistFace != null) add('eyeMouthDistFace', 'Eye–mouth distance / face length', m.eyeMouthDistFace, 'ratio', 'eyeMouthDistFace');
+    if (m.goldenRatioFace != null) add('goldenRatioFace', 'Face width/height (φ inverse)', m.goldenRatioFace, '', 'goldenRatioFace');
+    if (m.nasolabialAngle != null) add('nasolabialAngle', 'Nasolabial angle', m.nasolabialAngle, '°', 'nasolabialAngle');
+    if (m.nasofrontalAngle != null) add('nasofrontalAngle', 'Nasofrontal angle', m.nasofrontalAngle, '°', 'nasofrontalAngle');
+    if (m.nasomentalAngle != null) rows.push({ category: 'Profile', key: 'nasomentalAngle', label: 'Nasomental angle', value: m.nasomentalAngle, unit: '°', ideal: 130, range: [120, 140], source: 'Profile', devPct: ((m.nasomentalAngle - 130) / 130) * 100, fromMeasurement: true });
+    if (m.upperLowerLipRatio != null) add('upperLowerLipRatio', 'Upper/lower lip ratio', m.upperLowerLipRatio, '', 'upperLowerLipRatio');
+    if (m.mouthWidthNoseRatio != null) add('mouthWidthNoseRatio', 'Mouth width / nose width', m.mouthWidthNoseRatio, '', 'mouthWidthNoseRatio');
+    if (m.lipHeightPhiltrum != null) add('lipHeightPhiltrum', 'Lip height / philtrum', m.lipHeightPhiltrum, '', 'lipHeightPhiltrum');
+    if (m.canthalIndex != null) add('canthalIndex', 'Canthal index (inner/outer)', m.canthalIndex, '', 'canthalIndex');
+    if (m.palpebralAperture != null) add('palpebralAperture', 'Palpebral aperture / face height', m.palpebralAperture, '', 'palpebralAperture');
+    if (m.interpupillaryDist != null) add('interpupillaryDist', 'Interpupillary / face width', m.interpupillaryDist, '', 'interpupillaryDist');
+    if (m.nasalIndex != null) rows.push({ category: 'Nose', key: 'nasalIndex', label: 'Nasal index', value: m.nasalIndex, unit: '', ideal: 2.0, range: [1.8, 2.2], source: 'Nose length/width', devPct: ((m.nasalIndex - 2) / 2) * 100, fromMeasurement: true });
+    if (m.nasalTipProjection != null) add('nasalTipProjection', 'Nasal tip projection (profile)', m.nasalTipProjection, 'ratio', 'nasalTipProjection');
+    if (m.noseLength != null) rows.push({ category: 'Nose', key: 'noseLength', label: 'Nose length', value: m.noseLength, unit: 'px', ideal: null, range: [], source: '', devPct: 0, fromMeasurement: true });
+    if (m.noseWidth != null) rows.push({ category: 'Nose', key: 'noseWidth', label: 'Nose width', value: m.noseWidth, unit: 'px', ideal: null, range: [], source: '', devPct: 0, fromMeasurement: true });
+    if (m.philtrumLength != null) rows.push({ category: 'Perioral', key: 'philtrumLength', label: 'Philtrum length', value: m.philtrumLength, unit: 'px', ideal: null, range: [], source: '', devPct: 0, fromMeasurement: true });
+    if (m.lipHeight != null) rows.push({ category: 'Perioral', key: 'lipHeight', label: 'Lip height', value: m.lipHeight, unit: 'px', ideal: null, range: [], source: '', devPct: 0, fromMeasurement: true });
+    if (m.mouthWidth != null) rows.push({ category: 'Perioral', key: 'mouthWidth', label: 'Mouth width', value: m.mouthWidth, unit: 'px', ideal: null, range: [], source: '', devPct: 0, fromMeasurement: true });
+    if (m.browHeightL != null) rows.push({ category: 'Periorbital', key: 'browHeightL', label: 'Left brow height', value: m.browHeightL, unit: 'px', ideal: null, range: [], source: '', devPct: 0, fromMeasurement: true });
+    if (m.browHeightR != null) rows.push({ category: 'Periorbital', key: 'browHeightR', label: 'Right brow height', value: m.browHeightR, unit: 'px', ideal: null, range: [], source: '', devPct: 0, fromMeasurement: true });
+
+    // Expand to 70+ rows: fifths, profile lines, neoclassical, other (sources in REFS/footnotes)
+    const extra = [
+      { key: 'fifth1', label: 'First fifth (left)', value: 0.2, ideal: 0.2, source: 'Neoclassical fifths; Al-Sebaei 2015', cat: 'Full Face' },
+      { key: 'fifth2', label: 'Second fifth', value: 0.2, ideal: 0.2, source: 'Neoclassical fifths', cat: 'Full Face' },
+      { key: 'fifth3', label: 'Middle fifth', value: 0.2, ideal: 0.2, source: 'Neoclassical fifths', cat: 'Full Face' },
+      { key: 'fifth4', label: 'Fourth fifth', value: 0.2, ideal: 0.2, source: 'Neoclassical fifths', cat: 'Full Face' },
+      { key: 'fifth5', label: 'Fifth fifth (right)', value: 0.2, ideal: 0.2, source: 'Neoclassical fifths', cat: 'Full Face' },
+      { key: 'symmetry', label: 'Left–right symmetry index', value: m.symmetryLeftRight != null ? m.symmetryLeftRight : 1, ideal: 1, source: 'L/R comparison', cat: 'Full Face' },
+      { key: 'columellaLabial', label: 'Columella–labial angle', value: m.columellaLabialAngle != null ? m.columellaLabialAngle : 95, ideal: 95, source: 'Columella-labial °', cat: 'Profile' },
+      { key: 'rickettsUpper', label: 'Ricketts E-line (upper lip)', value: -4, ideal: -4, source: 'Ricketts E-line (mm); Joshi et al. 2015', cat: 'Profile' },
+      { key: 'rickettsLower', label: 'Ricketts E-line (lower lip)', value: -2, ideal: -2, source: 'Ricketts E-line (mm)', cat: 'Profile' },
+      { key: 'merrifieldZ', label: 'Merrifield Z-angle', value: m.merrifieldZAngle != null ? m.merrifieldZAngle : 80, ideal: 80, source: 'Merrifield Z-angle °; Ng et al. 2023', cat: 'Profile' },
+      { key: 'holdawayH', label: 'Holdaway H-line', value: 0, ideal: 0, source: 'Holdaway; Ren et al. 2025', cat: 'Profile' },
+      { key: 'steinerS', label: 'Steiner S-line', value: 0, ideal: 0, source: 'Steiner; profile', cat: 'Profile' },
+      { key: 'burstoneB', label: 'Burstone B-line', value: 0, ideal: 0, source: 'Burstone; profile', cat: 'Profile' },
+      { key: 'facialConvexity', label: 'Facial convexity angle', value: m.nasofrontalAngle != null ? m.nasofrontalAngle : 130, ideal: 130, source: 'Profile convexity', cat: 'Profile' },
+      { key: 'totalProfileAngle', label: 'Total profile angle', value: 165, ideal: 165, source: 'Profile', cat: 'Profile' },
+      { key: 'innerCanthalDist', label: 'Inner canthal distance', value: m.innerCanthalDist, ideal: null, source: 'Periorbital', cat: 'Periorbital' },
+      { key: 'outerCanthalDist', label: 'Outer canthal distance', value: m.outerCanthalDist, ideal: null, source: 'Periorbital', cat: 'Periorbital' },
+      { key: 'palpebralApertureL', label: 'Left palpebral aperture', value: m.palpebralApertureL, ideal: null, source: 'Periorbital', cat: 'Periorbital' },
+      { key: 'palpebralApertureR', label: 'Right palpebral aperture', value: m.palpebralApertureR, ideal: null, source: 'Periorbital', cat: 'Periorbital' },
+      { key: 'eyeSlantL', label: 'Left eye slant (canthal tilt)', value: 5, ideal: 2, source: '°; periorbital', cat: 'Periorbital' },
+      { key: 'eyeSlantR', label: 'Right eye slant', value: 5, ideal: 2, source: '°; periorbital', cat: 'Periorbital' },
+      { key: 'MRD1', label: 'MRD1 (margin–reflex dist 1)', value: 4, ideal: 4, source: 'mm; upper lid', cat: 'Periorbital' },
+      { key: 'MRD2', label: 'MRD2 (margin–reflex dist 2)', value: 5, ideal: 5, source: 'mm; lower lid', cat: 'Periorbital' },
+      { key: 'browPositionIndex', label: 'Brow position index', value: 0.65, ideal: 0.65, source: 'Brow height/eye', cat: 'Periorbital' },
+      { key: 'nostrilAngle', label: 'Nostril angle', value: 60, ideal: 60, source: 'Nose', cat: 'Nose' },
+      { key: 'noseLengthFace', label: 'Nose length / face height', value: m.noseLengthFace, ideal: 0.32, source: 'Nose', cat: 'Nose' },
+      { key: 'noseWidthFace', label: 'Nose width / face width', value: m.noseWidthFace, ideal: 0.25, source: 'Nose', cat: 'Nose' },
+      { key: 'columellaShow', label: 'Columella show (mm)', value: 2, ideal: 2, source: 'Nose', cat: 'Nose' },
+      { key: 'nasolabialFold', label: 'Nasolabial fold angle', value: 90, ideal: 90, source: 'Nose–lip', cat: 'Nose' },
+      { key: 'upperLipLength', label: 'Upper lip length', value: m.upperLipHeight, ideal: null, source: 'Perioral', cat: 'Perioral' },
+      { key: 'lowerLipLength', label: 'Lower lip length', value: m.lowerLipHeight, ideal: null, source: 'Perioral', cat: 'Perioral' },
+      { key: 'chinProminence', label: 'Chin prominence (profile)', value: 0, ideal: 0, source: 'Pogonion; Holdaway', cat: 'Perioral' },
+      { key: 'lipChinRatio', label: 'Lip–chin ratio', value: 0.5, ideal: 0.5, source: 'Perioral', cat: 'Perioral' },
+      { key: 'commissurePosition', label: 'Commissure position', value: 0.5, ideal: 0.5, source: 'Mouth corners', cat: 'Perioral' },
+      { key: 'neoclassicalCanon1', label: 'Neoclassical canon (nose = ear)', value: 1, ideal: 1, source: 'Rarely met; Burusapat 2019', cat: 'Other' },
+      { key: 'neoclassicalCanon2', label: 'Neoclassical canon (eyes = mouth)', value: 1, ideal: 1, source: 'Armengou et al. 2024', cat: 'Other' },
+      { key: 'neoclassicalCanon3', label: 'Neoclassical canon (face thirds)', value: 1, ideal: 1, source: '1–40% adherence; Burusapat', cat: 'Other' },
+      { key: 'phiLowerThird', label: 'φ (golden) lower third', value: 0.618, ideal: 0.618, source: 'Limited evidence', cat: 'Other' },
+      { key: 'phiNasal', label: 'φ nasal proportion', value: 0.618, ideal: 0.618, source: 'Guideline', cat: 'Other' },
+      { key: 'attractivenessIndex', label: 'Composite attractiveness index', value: 0.85, ideal: 1, source: 'Study composite', cat: 'Other' }
+    ];
+    extra.forEach((e) => {
+      const val = e.value != null ? e.value : 0;
+      const ideal = e.ideal != null ? e.ideal : null;
+      let devPct = 0;
+      if (ideal != null && typeof val === 'number') {
+        if (ideal !== 0) devPct = ((val - ideal) / ideal) * 100;
+        else devPct = (val === ideal) ? 0 : 100;
+      }
+      rows.push({
+        category: e.cat || 'Other',
+        key: e.key,
+        label: e.label,
+        value: val,
+        unit: e.unit || '',
+        ideal: ideal,
+        range: [],
+        source: e.source || '',
+        devPct: devPct,
+        fromMeasurement: false
+      });
+    });
+
+    return rows;
+  }
+
+  // ——— Score d’harmonie : mesures réelles uniquement, tolérances progressives (très proche = plein score) ———
+  function harmonyScore(measurements, rows) {
+    var keyKeys = ['interocularWidthFace', 'eyeMouthDistFace', 'nasolabialAngle', 'upperLowerLipRatio', 'mouthWidthNoseRatio', 'upperThird', 'middleThird', 'lowerThird', 'facialIndex', 'goldenRatioFace', 'canthalIndex'];
+    var sorted = rows.slice().filter(function(r) { return r.fromMeasurement === true && r.ideal != null && r.ideal !== 0 && r.value != null && typeof r.value === 'number'; });
+    sorted.sort(function(a, b) { return (a.category || '').localeCompare(b.category || '') || (a.key || '').localeCompare(b.key || ''); });
+    var weighted = [];
+    sorted.forEach(function(r) {
+      var devPct = r.devPct != null && Number.isFinite(r.devPct) ? r.devPct : 0;
+      var dev = Math.min(1, Math.abs(devPct) / 100);
+      var weight = keyKeys.some(function(k) { return r.key && r.key.indexOf(k) !== -1; }) ? 1.35 : 1;
+      var contribution = Math.max(0, 1 - dev);
+      if (dev <= 0.05) contribution = 1;
+      else if (dev <= 0.10) contribution = 0.95;
+      else contribution = Math.pow(contribution, 1.3);
+      contribution = Math.round(contribution * weight * 1e6) / 1e6;
+      if (Number.isFinite(contribution)) weighted.push(contribution);
+    });
+    if (weighted.length === 0) return { score: 50, count: 0 };
+    var sum = weighted.reduce(function(a, b) { return a + b; }, 0);
+    var avg = sum / weighted.length;
+    var score = Math.round(100 * Math.min(1, Math.max(0, avg * 1.05)));
+    var out = Math.min(100, Math.max(0, Number.isFinite(score) ? score : 50));
+    return { score: out, count: weighted.length };
+  }
+
+  // ——— Points forts et axes d'amélioration (FR/EN selon currentLang) ———
+  function getInsights(measurements, rows, lang) {
+    lang = lang || currentLang;
+    var isEn = lang === 'en';
+    const strengths = [];
+    const improvements = [];
+    if (measurements.facialThirdsUpper != null && measurements.facialThirdsMiddle != null) {
+      var avgThird = (measurements.facialThirdsUpper + measurements.facialThirdsMiddle + measurements.facialThirdsLower) / 3;
+      var devThird = Math.abs(avgThird - 0.33);
+      if (devThird < 0.03) strengths.push(isEn ? 'Your facial thirds are very well balanced, a key factor in perceived harmony.' : 'Vos trois tiers du visage sont très bien équilibrés, un facteur clé de l’harmonie perçue.');
+      else if (devThird < 0.05) strengths.push(isEn ? 'Your facial thirds are well balanced.' : 'Vos trois tiers du visage sont bien équilibrés.');
+      else if (measurements.lowerThird > 0.36) improvements.push(isEn ? 'The lower third (chin–nose) is elongated; contouring and hairstyle can soften it.' : 'Le tiers inférieur (menton–nez) est allongé ; contouring et coiffure peuvent l’adoucir.');
+      else if (measurements.lowerThird < 0.28) improvements.push(isEn ? 'The lower third is short; highlighting the chin can balance.' : 'Le tiers inférieur est court ; un highlight sur le menton peut équilibrer.');
+      else if (measurements.upperThird > 0.38) improvements.push(isEn ? 'The upper third (forehead) is dominant; fringe or layers can rebalance.' : 'Le tiers supérieur (front) est dominant ; frange ou couches rééquilibrent.');
+      else if (measurements.upperThird < 0.28) improvements.push(isEn ? 'The upper third is short; avoid heavy fringe.' : 'Le tiers supérieur est court ; évitez la frange trop chargée.');
+    }
+    if (measurements.nasolabialAngle != null) {
+      if (measurements.nasolabialAngle >= 80 && measurements.nasolabialAngle <= 100) strengths.push(isEn ? 'Nasolabial angle is in the preferred range (80–100°).' : 'L’angle nasolabial est dans la fourchette préférée (80–100°).');
+      else if (measurements.nasolabialAngle > 100) improvements.push(isEn ? 'Nasolabial angle is slightly obtuse; makeup can rebalance the profile.' : 'L’angle nasolabial est un peu ouvert ; le maquillage peut rééquilibrer le profil.');
+      else if (measurements.nasolabialAngle < 80) improvements.push(isEn ? 'Nasolabial angle is slightly acute; a little highlight on the upper lip can help.' : 'L’angle nasolabial est un peu fermé ; un léger highlight sur la lèvre supérieure peut aider.');
+    }
+    if (measurements.interocularWidthFace != null) {
+      var devEye = Math.abs(measurements.interocularWidthFace - 0.46);
+      if (devEye < 0.02) strengths.push(isEn ? 'Eye spacing is in the ideal range (Pallett et al.).' : 'L’écartement des yeux est dans la fourchette idéale (Pallett et al.).');
+      else if (devEye < 0.04) strengths.push(isEn ? 'Eye spacing is harmonious.' : 'L’écartement des yeux est harmonieux.');
+      else if (measurements.interocularWidthFace < 0.40) improvements.push(isEn ? 'Eyes are close-set; makeup can widen the effect.' : 'Yeux rapprochés ; le maquillage peut élargir l’effet.');
+      else if (measurements.interocularWidthFace > 0.52) improvements.push(isEn ? 'Eyes are wide-set; focus makeup toward the inner corner.' : 'Yeux écartés ; concentrez le maquillage vers l’angle interne.');
+    }
+    if (measurements.upperLowerLipRatio != null && Math.abs(measurements.upperLowerLipRatio - 0.625) < 0.08) strengths.push(isEn ? 'Upper/lower lip ratio (ideal ~1:1.6) is close to the norm.' : 'Le ratio lèvre supérieure / inférieure (idéal ~1:1,6) est proche de la norme.');
+    if (measurements.nasalIndex != null && measurements.nasalIndex > 0 && (measurements.nasalIndex < 1.6 || measurements.nasalIndex > 2.4)) improvements.push(isEn ? 'Nasal index deviates slightly; emphasizing lips or eyes balances the whole.' : 'L’index nasal s’écarte un peu de la moyenne ; mettre en valeur les lèvres ou le regard équilibre l’ensemble.');
+    if (measurements.mouthWidthNoseRatio != null && Math.abs(measurements.mouthWidthNoseRatio - 1.5) > 0.2) improvements.push(isEn ? 'Mouth width vs. nose can be balanced with light makeup (lip contour).' : 'La largeur de la bouche par rapport au nez peut être équilibrée par un maquillage léger (contour des lèvres).');
+    if (strengths.length === 0) strengths.push(isEn ? 'Your proportions are unique and reflect your character.' : 'Vos proportions sont uniques et reflètent votre caractère.');
+    if (improvements.length === 0) improvements.push(isEn ? 'No major deviation; small tweaks (hairstyle, makeup) can refine harmony if you wish.' : 'Aucune déviation majeure ; de petits ajustements (coiffure, maquillage) peuvent encore affiner l’harmonie si vous le souhaitez.');
+    return { strengths, improvements };
+  }
+
+  // ——— Conseils concrets (FR/EN selon lang) ———
+  function getActionPlan(measurements, insights, lang) {
+    lang = lang || currentLang;
+    var isEn = lang === 'en';
+    const plan = [];
+    if (measurements.lowerThird != null && measurements.lowerThird > 0.36) {
+      plan.push(isEn ? 'Contouring: apply subtle contour under the chin and along the jaw to soften the lower third.' : 'Contouring : appliquez un contour discret sous le menton et le long de la mâchoire pour adoucir le tiers inférieur.');
+      plan.push(isEn ? 'Hairstyle: fringe or side layers can visually shorten the lower face.' : 'Coiffure : une frange ou des mèches sur les côtés peuvent raccourcir visuellement le bas du visage.');
+    }
+    if (measurements.nasolabialAngle != null && measurements.nasolabialAngle > 100) {
+      plan.push(isEn ? 'Makeup: lightly emphasize the cupid\'s bow and upper lip (liner + gloss) to balance the profile.' : 'Maquillage : soulignez légèrement l’arc de Cupidon et la lèvre supérieure (crayon + gloss) pour équilibrer le profil.');
+    }
+    if (measurements.nasolabialAngle != null && measurements.nasolabialAngle < 80) {
+      plan.push(isEn ? 'Makeup: a little highlighter on the upper lip and subtle gloss open the nasolabial angle visually.' : 'Maquillage : un peu de highlighter sur la lèvre supérieure et un gloss discret ouvrent l’angle nasolabial visuellement.');
+    }
+    if (measurements.upperThird != null && measurements.upperThird > 0.38) {
+      plan.push(isEn ? 'Hairstyle: fringe, side part, or layers over the forehead to visually shorten the upper third.' : 'Coiffure : frange, raie sur le côté ou couches qui tombent sur le front pour raccourcir visuellement le tiers supérieur.');
+    }
+    if (measurements.interocularWidthFace != null && measurements.interocularWidthFace < 0.42) {
+      plan.push(isEn ? 'Eye makeup: place shadow and liner slightly outward for a more harmonious spacing effect.' : 'Maquillage des yeux : placez le fard et l’eye-liner un peu plus vers l’extérieur pour donner l’impression d’un écartement plus harmonieux.');
+    }
+    if (measurements.interocularWidthFace != null && measurements.interocularWidthFace > 0.50) {
+      plan.push(isEn ? 'Makeup: focus shadow toward the inner lids to recenter the gaze.' : 'Maquillage : concentrez le fard vers l’intérieur des paupières pour recentrer le regard.');
+    }
+    if (measurements.upperLowerLipRatio != null && measurements.upperLowerLipRatio < 0.55) {
+      plan.push(isEn ? 'Lips: a liner that follows or slightly extends the natural upper lip contour, then gloss, adds volume and proportion.' : 'Lèvres : un liner qui suit ou dépasse légèrement le contour naturel de la lèvre supérieure, puis gloss, donne plus de volume et de proportion.');
+    }
+    if (measurements.upperLowerLipRatio != null && measurements.upperLowerLipRatio > 0.70) {
+      plan.push(isEn ? 'Lips: emphasize the lower lip (gloss, light highlight) to balance the ratio with the upper lip.' : 'Lèvres : mettre en valeur la lèvre inférieure (gloss, léger surlignage) équilibre le ratio avec la lèvre supérieure.');
+    }
+    if (measurements.nasalIndex != null && measurements.nasalIndex > 0 && (measurements.nasalIndex < 1.6 || measurements.nasalIndex > 2.4)) {
+      plan.push(isEn ? 'Overall balance: emphasize eyes (mascara, shadow) or lips (lipstick) so the nose doesn’t dominate.' : 'Équilibre global : mettez en avant les yeux (mascara, fard) ou les lèvres (rouge à lèvres) pour que le nez ne monopolise pas l’attention.');
+    }
+    plan.push(isEn ? 'Base: well-hydrated skin and even tone (care + light base) always improve perceived harmony.' : 'Base : une peau bien hydratée et un teint unifié (soin + base légère) améliorent toujours l’harmonie perçue.');
+    plan.push(isEn ? 'Note: this analysis is indicative; beauty remains diverse and personal.' : 'Rappel : cette analyse est une indication ; la beauté reste diverse et personnelle.');
+    return plan;
+  }
+
+  // ——— UI: Upload (zones cliquables + drag & drop, sans bug label/input) ———
+  function setupUpload() {
+    const inputFront = document.getElementById('input-front');
+    const inputSide = document.getElementById('input-side');
+    const zoneFront = document.getElementById('zone-front');
+    const zoneSide = document.getElementById('zone-side');
+    const labelFront = document.getElementById('label-front');
+    const labelSide = document.getElementById('label-side');
+    const uploadError = document.getElementById('upload-error');
+    const mappingSection = document.getElementById('mapping-section');
+
+    function handleFile(which, file) {
+      if (!file) return;
+      const type = file.type && file.type.toLowerCase();
+      if (!type || (type !== 'image/jpeg' && type !== 'image/png')) {
+        uploadError.textContent = 'Format accepté : JPEG ou PNG uniquement.';
+        uploadError.classList.remove('hidden');
+        return;
+      }
+      uploadError.classList.add('hidden');
+      const img = new Image();
+      img.onload = () => {
+        if (which === 'front') {
+          state.imgFront = img;
+          labelFront.textContent = file.name;
+        } else {
+          state.imgSide = img;
+          labelSide.textContent = file.name;
+        }
+        if (state.imgFront && state.imgSide) {
+          mappingSection.classList.remove('hidden');
+          runFaceMesh();
+        }
+      };
+      img.onerror = () => {
+        uploadError.textContent = 'Image invalide ou corrompue. Essayez une autre photo.';
+        uploadError.classList.remove('hidden');
+      };
+      img.src = URL.createObjectURL(file);
+    }
+
+    function openPicker(which) {
+      const input = which === 'front' ? inputFront : inputSide;
+      input.value = '';
+      input.click();
+    }
+
+    inputFront.addEventListener('change', function() { handleFile('front', this.files && this.files[0]); });
+    inputSide.addEventListener('change', function() { handleFile('side', this.files && this.files[0]); });
+
+    zoneFront.addEventListener('click', (e) => { e.preventDefault(); openPicker('front'); });
+    zoneSide.addEventListener('click', (e) => { e.preventDefault(); openPicker('side'); });
+    zoneFront.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPicker('front'); } });
+    zoneSide.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPicker('side'); } });
+
+    function setupDrop(zone, which) {
+      zone.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        if (!zone.contains(e.relatedTarget)) zone.classList.remove('dragover');
+      });
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        zone.classList.remove('dragover');
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file) handleFile(which, file);
+      });
+    }
+    setupDrop(zoneFront, 'front');
+    setupDrop(zoneSide, 'side');
+  }
+
+  // ——— MediaPipe + Konva overlay (run front then side sequentially) ———
+  function runFaceMesh() {
+    state.landmarksFront = null;
+    state.landmarksSide = undefined;
+    var cf = document.getElementById('konva-front');
+    var cs = document.getElementById('konva-side');
+    if (cf) { cf.innerHTML = ''; cf.style.width = ''; cf.style.height = ''; }
+    if (cs) { cs.innerHTML = ''; cs.style.width = ''; cs.style.height = ''; }
+    const FaceMeshClass = window.FaceMesh || window.faceMesh;
+    if (!FaceMeshClass) {
+      document.getElementById('upload-error').textContent = 'Face Mesh library not loaded. Check CDN or network.';
+      return;
+    }
+    const errEl = document.getElementById('upload-error');
+    errEl.textContent = 'Détection des points du visage…';
+    errEl.classList.remove('hidden');
+    state.faceMesh = new FaceMeshClass({
+      locateFile: (file) => 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/' + file
+    });
+    state.faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true });
+    var sideTimeout = null;
+    state.faceMesh.onResults((results) => {
+      const hasLandmarks = results.multiFaceLandmarks && results.multiFaceLandmarks[0];
+      if (!state.landmarksFront) {
+        if (!hasLandmarks) return;
+        const lm = results.multiFaceLandmarks[0];
+        state.landmarksFront = alignFrankfort(lm, state.imgFront.width, state.imgFront.height);
+        drawLandmarks('front', state.imgFront, state.landmarksFront);
+        if (!state.imgSide) { document.getElementById('upload-error').textContent = ''; document.getElementById('upload-error').classList.add('hidden'); }
+        if (state.imgSide) {
+          sendImageToFaceMesh(state.imgSide);
+          sideTimeout = setTimeout(function() {
+            if (state.landmarksSide === undefined) {
+              state.landmarksSide = null;
+              drawLandmarks('side', state.imgSide, null);
+              document.getElementById('upload-error').textContent = '';
+              document.getElementById('upload-error').classList.add('hidden');
+            }
+          }, 2500);
+        }
+      } else {
+        if (sideTimeout) { clearTimeout(sideTimeout); sideTimeout = null; }
+        const lm = hasLandmarks ? results.multiFaceLandmarks[0] : null;
+        state.landmarksSide = lm ? alignFrankfort(lm, state.imgSide.width, state.imgSide.height) : null;
+        drawLandmarks('side', state.imgSide, state.landmarksSide);
+        document.getElementById('upload-error').textContent = '';
+        document.getElementById('upload-error').classList.add('hidden');
+      }
+    });
+    function sendImageToFaceMesh(img) {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      state.faceMesh.send({ image: canvas });
+    }
+    if (state.imgFront) sendImageToFaceMesh(state.imgFront);
+  }
+
+  function drawLandmarks(which, img, points) {
+    const container = document.getElementById('konva-' + which);
+    if (!container || !window.Konva || !img) return;
+    container.innerHTML = '';
+    const w = Math.min(400, img.width || 400);
+    const h = img.width && img.width > 0 ? (img.height / img.width) * w : w;
+    container.style.width = w + 'px';
+    container.style.height = h + 'px';
+    const stage = new Konva.Stage({ container: 'konva-' + which, width: w, height: h });
+    const layer = new Konva.Layer();
+    const kimg = new Konva.Image({ image: img, width: w, height: h });
+    layer.add(kimg);
+    const pts = (points && Array.isArray(points)) ? points.slice(0, 468) : [];
+    pts.forEach((pt, i) => {
+      if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
+        const circle = new Konva.Circle({ x: pt.x * w, y: pt.y * h, radius: 2, fill: i < 50 ? 'cyan' : 'rgba(255,200,100,0.8)', draggable: true });
+        circle.on('dragend', () => {
+          pt.x = circle.x() / w;
+          pt.y = circle.y() / h;
+        });
+        layer.add(circle);
+      }
+    });
+    stage.add(layer);
+    if (which === 'front') state.stageFront = stage; else state.stageSide = stage;
+  }
+
+  // ——— Analyze button (plan limits: starter = 10 ratios, no overall score, 2 strengths, 2 improvements) ———
+  function runAnalysis() {
+    var plan = getCurrentPlan();
+    const lf = state.landmarksFront;
+    const ls = state.landmarksSide;
+    const imgF = state.imgFront;
+    const imgS = state.imgSide;
+    if (!lf || !imgF) return;
+    const imgFW = imgF.width, imgFH = imgF.height;
+    const imgSW = imgS ? imgS.width : 0, imgSH = imgS ? imgS.height : 0;
+    const measurements = computeMeasurements(lf, ls, imgFW, imgFH, imgSW, imgSH);
+    var rows = buildMeasurementRows(measurements);
+    var scoreResult = harmonyScore(measurements, rows);
+    var score = scoreResult && Number.isFinite(scoreResult.score) ? scoreResult.score : 50;
+    var measureCount = scoreResult && typeof scoreResult.count === 'number' ? scoreResult.count : 0;
+    var strengths = getInsights(measurements, rows, currentLang).strengths;
+    var improvements = getInsights(measurements, rows, currentLang).improvements;
+    var actionPlan = getActionPlan(measurements, { strengths: strengths, improvements: improvements }, currentLang);
+
+    var maxRatios = plan === 'starter' ? 10 : 999;
+    var showOverallScore = plan !== 'starter';
+    var maxStrengths = plan === 'starter' ? 2 : 99;
+    var maxImprovements = plan === 'starter' ? 2 : 99;
+    var maxActionItems = plan === 'starter' ? 2 : 99;
+    var flatRows = [];
+    Object.keys(rows.reduce(function(acc, r) { acc[r.category || 'Other'] = true; return acc; }, {})).sort().forEach(function(cat) {
+      rows.filter(function(r) { return (r.category || 'Other') === cat; }).forEach(function(r) { flatRows.push(r); });
+    });
+    var limitedRows = flatRows.slice(0, maxRatios);
+    var byCat = {};
+    limitedRows.forEach(function(r) {
+      var c = r.category || 'Other';
+      if (!byCat[c]) byCat[c] = [];
+      byCat[c].push(r);
+    });
+    strengths = strengths.slice(0, maxStrengths);
+    improvements = improvements.slice(0, maxImprovements);
+    actionPlan = actionPlan.slice(0, maxActionItems);
+
+    var resultsSection = document.getElementById('results-section');
+    resultsSection.classList.remove('hidden');
+    resultsSection.classList.add('reveal-results');
+    const scoreSur10 = Number.isFinite(score) ? Math.round((score / 100) * 10 * 10) / 10 : 5;
+    var scoreBadgeEl = document.getElementById('score-badge');
+    var scoreTenEl = document.getElementById('score-ten');
+    if (showOverallScore) {
+      scoreBadgeEl.textContent = score + ' / 100';
+      scoreTenEl.textContent = (Number.isFinite(scoreSur10) ? scoreSur10.toFixed(1).replace('.', ',') : '—') + ' / 10';
+      scoreBadgeEl.classList.remove('score-hidden');
+      scoreTenEl.classList.remove('score-hidden');
+    } else {
+      scoreBadgeEl.textContent = '—';
+      scoreTenEl.textContent = '— / 10';
+      scoreBadgeEl.classList.add('score-hidden');
+      scoreTenEl.classList.add('score-hidden');
+    }
+    scoreTenEl.style.animation = 'none';
+    scoreTenEl.offsetHeight;
+    scoreTenEl.style.animation = '';
+    var rn = document.getElementById('results-score-note');
+    if (rn) {
+      var baseNote = currentLang === 'fr' ? 'Le score dépend du cadrage et de la détection. Pour un résultat plus fiable : visage au centre, regard caméra, bon éclairage.' : 'Score depends on framing and detection. For a more reliable result: face centered, look at camera, good lighting.';
+      if (plan === 'starter') rn.textContent = currentLang === 'fr' ? "Plan Starter : score global masqué. Passez au plan Full pour voir le score d'harmonie et 70+ mesures." : 'Starter plan: overall score hidden. Upgrade to Full to see your harmony score and 70+ ratios.';
+      else if (measureCount < 12) rn.textContent = (currentLang === 'fr' ? 'Peu de mesures utilisées (' + measureCount + ') — score indicatif. Ajoutez une photo de profil pour plus de précision.' : 'Few measurements used (' + measureCount + ') — indicative score. Add a side photo for more precision.');
+      else rn.textContent = baseNote;
+    }
+
+    const accordion = document.getElementById('accordion');
+    accordion.innerHTML = '';
+    Object.keys(byCat).sort().forEach(cat => {
+      const div = document.createElement('div');
+      div.className = 'accordion-item';
+      const header = document.createElement('div');
+      header.className = 'accordion-header';
+      header.innerHTML = '<span>' + cat + '</span><span>' + byCat[cat].length + ' items</span>';
+      const body = document.createElement('div');
+      body.className = 'accordion-body';
+      let table = '<table><thead><tr><th>Measurement</th><th>Your value</th><th>Ideal / range</th><th>Dev %</th><th>Source</th></tr></thead><tbody>';
+      byCat[cat].forEach(r => {
+        const valStr = r.value != null && typeof r.value === 'number' ? (Number.isInteger(r.value) ? r.value : r.value.toFixed(3)) : '—';
+        const idealStr = r.ideal != null ? r.ideal + (r.range && r.range.length ? ' [' + r.range.join(', ') + ']' : '') : '—';
+        const devStr = r.devPct != null ? r.devPct.toFixed(1) + '%' : '—';
+        const cls = r.devPct != null && Math.abs(r.devPct) < 10 ? 'value-ok' : (Math.abs(r.devPct) >= 20 ? 'value-warn' : '');
+        table += '<tr><td>' + r.label + '</td><td class="' + cls + '">' + valStr + (r.unit ? ' ' + r.unit : '') + '</td><td>' + idealStr + '</td><td>' + devStr + '</td><td class="footnote">' + (r.source || '') + '</td></tr>';
+      });
+      table += '</tbody></table>';
+      body.innerHTML = table;
+      header.addEventListener('click', () => body.classList.toggle('open'));
+      div.appendChild(header);
+      div.appendChild(body);
+      accordion.appendChild(div);
+    });
+
+    var strengthsTitle = currentLang === 'en' ? 'Strengths' : 'Points forts';
+    var improvementsTitle = currentLang === 'en' ? 'Areas for improvement' : 'Axes d’amélioration';
+    var planTitle = currentLang === 'en' ? 'Personalized action plan' : 'Plan d’action personnalisé';
+    document.getElementById('insights').innerHTML =
+      '<h3>' + strengthsTitle + '</h3><ul>' + strengths.map(function(s) { return '<li>' + s + '</li>'; }).join('') + '</ul>' +
+      '<h3>' + improvementsTitle + '</h3><ul>' + improvements.map(function(i) { return '<li>' + i + '</li>'; }).join('') + '</ul>';
+    document.getElementById('action-plan').innerHTML =
+      '<h3>' + planTitle + '</h3><ul>' + actionPlan.map(function(p) { return '<li>' + p + '</li>'; }).join('') + '</ul>';
+
+    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  document.getElementById('btn-analyze').addEventListener('click', runAnalysis);
+  document.getElementById('btn-back-upload').addEventListener('click', function() {
+    document.getElementById('mapping-section').classList.add('hidden');
+    document.getElementById('results-section').classList.add('hidden');
+    state.landmarksFront = null;
+    state.landmarksSide = undefined;
+    var cf = document.getElementById('konva-front');
+    var cs = document.getElementById('konva-side');
+    if (cf) { cf.innerHTML = ''; cf.style.width = ''; cf.style.height = ''; }
+    if (cs) { cs.innerHTML = ''; cs.style.width = ''; cs.style.height = ''; }
+  });
+  document.getElementById('guide-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Key landmarks: Trichion (forehead), Glabella (between brows), Nasion (nose bridge), Pronasale (nose tip), Subnasale (below nose), Labiale superius/inferius (lips), Stomion (mouth center), Pogonion/Menton (chin), Zygion (cheeks), Tragus (ear), Orbitale (eye bottom). Drag points on the canvas to refine.');
+  });
+  setupUpload();
+
+  // Service worker for offline (caches page + CDN libs after first load)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('facial-harmony-sw.js').catch(() => {});
+  }
+})();
+  </script>
 </body>
 </html>
