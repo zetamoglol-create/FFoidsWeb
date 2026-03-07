@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>FFoids — Facial harmony analysis</title>
+  <script>window.GOOGLE_CLIENT_ID = '48322546394-6p2c5etjtqsu2c2rhvae8vi54glmuvee.apps.googleusercontent.com';</script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/konva@9.2.3/konva.min.js"></script>
@@ -775,6 +776,7 @@
     if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
       var clientId = GOOGLE_CLIENT_ID || window.GOOGLE_CLIENT_ID;
       if (clientId) {
+        var origin = window.location.origin;
         google.accounts.id.initialize({ client_id: clientId, callback: function(res) {
           if (res && res.credential) {
             try {
@@ -790,6 +792,12 @@
         btn.id = 'google-btn-inner';
         google.accounts.id.renderButton(btn, { type: 'standard', size: 'large', text: 'signin_with', theme: 'filled_black' });
         div.appendChild(btn);
+        var originHint = document.createElement('p');
+        originHint.className = 'auth-modal-note';
+        originHint.style.marginTop = '0.75rem';
+        originHint.style.fontSize = '0.8rem';
+        originHint.innerHTML = (currentLang === 'fr' ? 'Origine de la page : ' : 'Page origin: ') + '<code style="word-break:break-all">' + origin + '</code>' + (currentLang === 'fr' ? ' — ajoute cette URL dans Google Cloud (Origines JS autorisées).' : ' — add this URL in Google Cloud (Authorized JavaScript origins).');
+        div.appendChild(originHint);
       } else {
         div.innerHTML = '<p class="auth-modal-note">' + (currentLang === 'fr' ? 'Configurez GOOGLE_CLIENT_ID dans le script (Google Cloud Console).' : 'Set GOOGLE_CLIENT_ID in the script (Google Cloud Console).') + '</p>' +
           '<p class="auth-modal-note"><button type="button" class="btn btn-secondary" id="auth-demo-btn">' + (currentLang === 'fr' ? 'Démo : continuer sans Google' : 'Demo: continue without Google') + '</button></p>';
