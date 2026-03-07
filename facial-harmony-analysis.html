@@ -267,6 +267,9 @@
       padding: 0.25rem 0.75rem;
       border-radius: 20px;
     }
+    .plan-badge-current { background: var(--success); }
+    .plan-card.plan-current { border-color: rgba(92, 184, 92, 0.5); box-shadow: 0 0 0 1px var(--success); }
+    .plan-cta .btn:disabled { opacity: 0.9; cursor: default; }
     .plan-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
     .plan-price { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.25rem; }
     .plan-price .period { font-size: 0.9rem; font-weight: 500; color: var(--textMuted); }
@@ -292,7 +295,9 @@
     .user-plan-info .user-email { color: var(--text); }
     .btn-logout { background: none; border: none; color: var(--accent); cursor: pointer; font-size: inherit; margin-left: 0.5rem; }
     .btn-logout:hover { text-decoration: underline; }
-    .score-upgrade-msg { color: var(--warn); font-size: 0.9rem; margin-top: 0.5rem; }
+    .score-upgrade-msg { color: var(--warn); font-size: 0.9rem; margin-top: 0.5rem; text-align: center; }
+.score-upgrade-msg a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.score-upgrade-msg a:hover { text-decoration: underline; }
     /* Sections */
     section {
       background: rgba(26, 26, 32, 0.8);
@@ -650,6 +655,7 @@
       </div>
       <p style="text-align: center; color: var(--textMuted);" id="results-score-desc">Note d'harmonie faciale. Plus proche des idéaux = plus élevé.</p>
       <p class="score-note" id="results-score-note">Le score dépend du cadrage et de la détection. Pour un résultat plus fiable : visage au centre, regard caméra, bon éclairage.</p>
+      <div id="results-upgrade-cta" class="hidden" aria-hidden="true"></div>
       <div class="accordion" id="accordion"></div>
       <p class="conseils-personalized" id="conseils-personalized">Conseils personnalisés selon vos mesures (pas toujours les mêmes).</p>
       <h3 class="conseils-title" id="conseils-title-text">Conseils pour améliorer ce qui est nécessaire</h3>
@@ -716,44 +722,71 @@
   var STORAGE_PLAN = 'ffoids_plan';
   var STORAGE_USER = 'ffoids_user';
 
+  // ——— Gumroad : liens vers tes produits. Après paiement, configure dans Gumroad "Redirect" vers : https://ton-site.com/?plan=full ou ?plan=pro
+  var GUMROAD_FULL_URL = 'https://taikosouslapluie.gumroad.com/l/jidadd';
+  var GUMROAD_PRO_URL = 'https://taikosouslapluie.gumroad.com/l/qbudd';
+
   function getCurrentPlan() { try { return localStorage.getItem(STORAGE_PLAN) || 'starter'; } catch (e) { return 'starter'; } }
   function setCurrentPlan(planId) { try { localStorage.setItem(STORAGE_PLAN, planId); } catch (e) {} }
   function getCurrentUser() { try { var j = localStorage.getItem(STORAGE_USER); return j ? JSON.parse(j) : null; } catch (e) { return null; } }
   function setCurrentUser(user) { try { localStorage.setItem(STORAGE_USER, user ? JSON.stringify(user) : ''); } catch (e) {} }
 
+  function planLabel(key) {
+    var t = typeof i18n !== 'undefined' && i18n[currentLang] ? i18n[currentLang] : {};
+    var labels = { planMostPopular: 'Most popular', planYourPlan: 'Your plan', planCurrentPlan: 'Current plan', planUpgrade: 'Upgrade', planGetStarted: 'Get started' };
+    return t[key] || labels[key] || key;
+  }
+
   function renderPricingPlans() {
     var container = document.getElementById('pricing-plans');
     if (!container) return;
+    var currentPlan = getCurrentPlan();
     container.innerHTML = PRICING_PLANS.map(function(plan, idx) {
       var priceStr = plan.price === 0 ? '0' : plan.price.toFixed(2);
       var periodStr = plan.period === 'forever' ? ' forever' : ' /' + (plan.period === 'month' ? 'mo' : 'yr');
       var priceDisplay = plan.price === 0 ? '0' : ('$' + priceStr + ' USD');
-      var badge = plan.featured ? '<span class="plan-badge">Most popular</span>' : '';
+      var isCurrent = (plan.planId || plan.name.toLowerCase()) === currentPlan;
+      var badge = isCurrent ? '<span class="plan-badge plan-badge-current">' + planLabel('planYourPlan') + '</span>' : (plan.featured ? '<span class="plan-badge">' + planLabel('planMostPopular') + '</span>' : '');
       var featuresHtml = (plan.included || []).map(function(f) { return '<li class="included"><span class="icon-check" aria-hidden="true">✓</span>' + f + '</li>'; }).join('') +
         (plan.excluded || []).map(function(f) { return '<li class="excluded"><span class="icon-cross" aria-hidden="true">✕</span>' + f + '</li>'; }).join('');
-      return '<div class="plan-card' + (plan.featured ? ' featured' : '') + '" data-plan-id="' + (plan.planId || plan.name.toLowerCase()) + '">' + badge +
+      var btnText = isCurrent ? planLabel('planCurrentPlan') : (plan.price > 0 ? planLabel('planUpgrade') : planLabel('planGetStarted'));
+      var btnDisabled = isCurrent ? ' disabled' : '';
+      return '<div class="plan-card' + (plan.featured ? ' featured' : '') + (isCurrent ? ' plan-current' : '') + '" data-plan-id="' + (plan.planId || plan.name.toLowerCase()) + '">' + badge +
         '<div class="plan-name">' + plan.name + '</div>' +
         '<div class="plan-price">' + priceDisplay + '<span class="period">' + periodStr + '</span></div>' +
         '<ul class="plan-features">' + featuresHtml + '</ul>' +
-        '<div class="plan-cta"><button type="button" class="btn btn-secondary plan-cta-btn">' + (plan.cta || 'Get started') + '</button></div></div>';
+        '<div class="plan-cta"><button type="button" class="btn btn-secondary plan-cta-btn"' + btnDisabled + '>' + btnText + '</button></div></div>';
     }).join('');
     container.querySelectorAll('.plan-cta-btn').forEach(function(btn, idx) {
+      if (btn.disabled) return;
       var card = btn.closest('.plan-card');
       var planId = card && card.getAttribute('data-plan-id');
       btn.addEventListener('click', function() { handlePlanCta(planId, PRICING_PLANS[idx]); });
     });
   }
 
+  function getGumroadUrl(planId) {
+    if (planId === 'full' && (GUMROAD_FULL_URL || window.GUMROAD_FULL_URL)) return GUMROAD_FULL_URL || window.GUMROAD_FULL_URL;
+    if (planId === 'pro' && (GUMROAD_PRO_URL || window.GUMROAD_PRO_URL)) return GUMROAD_PRO_URL || window.GUMROAD_PRO_URL;
+    return null;
+  }
+
   function handlePlanCta(planId, plan) {
     if (planId === 'starter') {
       setCurrentPlan('starter');
       updateUserUI();
+      renderPricingPlans();
       alert(currentLang === 'fr' ? 'Vous utilisez le plan Starter.' : 'You\'re on the Starter plan.');
       return;
     }
     var user = getCurrentUser();
     if (!user || !user.email) {
       showGoogleSignInModal(planId, plan);
+      return;
+    }
+    var gumroadUrl = getGumroadUrl(planId);
+    if (gumroadUrl) {
+      window.location.href = gumroadUrl;
       return;
     }
     completePurchase(planId, plan);
@@ -784,7 +817,11 @@
               setCurrentUser({ email: payload.email || '', name: payload.name || '', picture: payload.picture || '' });
               closeAuthModal();
               updateUserUI();
-              if (planId && plan) completePurchase(planId, plan);
+              if (planId && plan) {
+                var gumroadUrl = getGumroadUrl(planId);
+                if (gumroadUrl) { window.location.href = gumroadUrl; return; }
+                completePurchase(planId, plan);
+              }
             } catch (e) {}
           }
         } });
@@ -807,7 +844,11 @@
           closeAuthModal();
           updateUserUI();
           var pending = window._pendingPlanAfterAuth;
-          if (pending && pending.planId && pending.plan) completePurchase(pending.planId, pending.plan);
+          if (pending && pending.planId && pending.plan) {
+            var gumroadUrl = getGumroadUrl(pending.planId);
+            if (gumroadUrl) { window.location.href = gumroadUrl; return; }
+            completePurchase(pending.planId, pending.plan);
+          }
         });
       }
     } else {
@@ -860,6 +901,19 @@
 
   renderPricingPlans();
   if (document.getElementById('user-plan-info')) updateUserUI();
+
+  // ——— Retour après paiement Gumroad : ?plan=full ou ?plan=pro active le plan puis nettoie l’URL
+  (function applyPlanFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var plan = params.get('plan');
+    if (plan === 'full' || plan === 'pro') {
+      setCurrentPlan(plan);
+      if (typeof updateUserUI === 'function') updateUserUI();
+      if (typeof renderPricingPlans === 'function') renderPricingPlans();
+      var cleanUrl = window.location.pathname || '/';
+      if (window.history && window.history.replaceState) window.history.replaceState({}, '', cleanUrl);
+    }
+  })();
 
   // ——— Langue (FR / EN) ———
   var currentLang = 'en';
@@ -946,7 +1000,12 @@
       valueTitle: "Inside your report",
       valueSub: "One score, dozens of ratios, and clear next steps—all in one place.",
       pricingTitle: "Plans",
-      pricingSub: "Pick the tier that fits. Change or cancel anytime."
+      pricingSub: "Pick the tier that fits. Change or cancel anytime.",
+      planMostPopular: "Most popular",
+      planYourPlan: "Your plan",
+      planCurrentPlan: "Current plan",
+      planUpgrade: "Upgrade",
+      planGetStarted: "Get started"
     }
   };
 
@@ -1000,6 +1059,7 @@
     if (dl) dl.textContent = t.disclaimerLabel + ' ';
     set('disclaimer-text', t.disclaimer);
     if (typeof updateUserUI === 'function') updateUserUI();
+    if (typeof renderPricingPlans === 'function') renderPricingPlans();
       if (wrap) wrap.parentElement.classList.remove('lang-switching');
     };
     var t = i18n[lang];
@@ -1014,6 +1074,13 @@
   document.getElementById('lang-fr').addEventListener('click', function() { setLanguage('fr'); });
   document.getElementById('lang-en').addEventListener('click', function() { setLanguage('en'); });
   setLanguage('en');
+  if (i18n.fr && !i18n.fr.planYourPlan) {
+    i18n.fr.planMostPopular = 'Le plus populaire';
+    i18n.fr.planYourPlan = 'Votre plan';
+    i18n.fr.planCurrentPlan = 'Plan actuel';
+    i18n.fr.planUpgrade = 'Passer à ce plan';
+    i18n.fr.planGetStarted = 'Commencer';
+  }
 
   // ——— MediaPipe Face Mesh landmark indices (468 points) ———
   // Ref: MediaPipe Face Mesh; community mappings (e.g. understanding-mediapipe-facemesh-output)
@@ -1652,6 +1719,7 @@
     var improvements = getInsights(measurements, rows, currentLang).improvements;
     var actionPlan = getActionPlan(measurements, { strengths: strengths, improvements: improvements }, currentLang);
 
+    // Plan limits: only 'starter' is limited. 'full' and 'pro' get full benefits (score, 70+ ratios, all insights).
     var maxRatios = plan === 'starter' ? 10 : 999;
     var showOverallScore = plan !== 'starter';
     var maxStrengths = plan === 'starter' ? 2 : 99;
@@ -1698,6 +1766,13 @@
       if (plan === 'starter') rn.textContent = currentLang === 'fr' ? "Plan Starter : score global masqué. Passez au plan Full pour voir le score d'harmonie et 70+ mesures." : 'Starter plan: overall score hidden. Upgrade to Full to see your harmony score and 70+ ratios.';
       else if (measureCount < 12) rn.textContent = (currentLang === 'fr' ? 'Peu de mesures utilisées (' + measureCount + ') — score indicatif. Ajoutez une photo de profil pour plus de précision.' : 'Few measurements used (' + measureCount + ') — indicative score. Add a side photo for more precision.');
       else rn.textContent = baseNote;
+    }
+    var upgradeWrap = document.getElementById('results-upgrade-cta');
+    if (upgradeWrap) {
+      if (plan === 'starter') {
+        upgradeWrap.innerHTML = '<p class="score-upgrade-msg"><a href="#pricing-section">' + (currentLang === 'fr' ? '↑ Voir les plans et passer au Full pour le score complet et 70+ ratios' : '↑ View plans & upgrade to Full for full score and 70+ ratios') + '</a></p>';
+        upgradeWrap.classList.remove('hidden');
+      } else upgradeWrap.classList.add('hidden');
     }
 
     const accordion = document.getElementById('accordion');
