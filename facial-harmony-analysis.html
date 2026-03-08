@@ -361,6 +361,24 @@
     .promo-url { font-size: 0.9rem; color: #2dd4bf; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 1rem; }
     .btn-promo-download { margin-top: 0.25rem; background: linear-gradient(135deg, #7c6ee8 0%, #5a4fb8 100%); color: #fff; border: none; padding: 0.7rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: var(--font); font-size: 0.9rem; box-shadow: 0 4px 14px rgba(124, 110, 232, 0.35); transition: transform 0.15s, box-shadow 0.15s; }
     .btn-promo-download:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124, 110, 232, 0.45); }
+    .btn-tips-chat { margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(45, 212, 191, 0.15); border: 1px solid rgba(45, 212, 191, 0.4); color: #2dd4bf; }
+    .btn-tips-chat:hover { background: rgba(45, 212, 191, 0.25); border-color: #2dd4bf; }
+    .btn-tips-chat.hidden { display: none !important; }
+    .tips-chat-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 150; display: flex; justify-content: flex-end; padding: 0; }
+    .tips-chat-overlay.hidden { display: none; }
+    .tips-chat-panel { width: 100%; max-width: 400px; height: 100%; background: var(--surface); border-left: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; box-shadow: -10px 0 40px rgba(0,0,0,0.4); }
+    .tips-chat-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .tips-chat-header h3 { font-size: 1.1rem; font-weight: 600; margin: 0; }
+    .tips-chat-close { background: none; border: none; color: var(--textMuted); font-size: 1.5rem; cursor: pointer; padding: 0 0.25rem; line-height: 1; }
+    .tips-chat-close:hover { color: var(--text); }
+    .tips-chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .tips-msg { max-width: 90%; padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.45; }
+    .tips-msg.user { align-self: flex-end; background: var(--accent); color: #fff; }
+    .tips-msg.bot { align-self: flex-start; background: var(--surface2); border: 1px solid rgba(255,255,255,0.06); }
+    .tips-chat-input-wrap { display: flex; gap: 0.5rem; padding: 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .tips-chat-input { flex: 1; padding: 0.65rem 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: var(--surface2); color: var(--text); font-family: var(--font); font-size: 0.9rem; }
+    .tips-chat-input:focus { outline: none; border-color: var(--accent); }
+    .tips-chat-send { padding: 0.65rem 1rem; flex-shrink: 0; }
     .user-plan-info { font-size: 0.85rem; color: var(--textMuted); margin-bottom: 1rem; }
     .user-plan-info .user-email { color: var(--text); }
     .btn-logout { background: none; border: none; color: var(--accent); cursor: pointer; font-size: inherit; margin-left: 0.5rem; }
@@ -868,8 +886,23 @@
       <div class="disclaimer">
         <strong id="disclaimer-label">Disclaimer :</strong> <span id="disclaimer-text">Les idéaux sont des moyennes d’études ; la beauté est diverse et personnelle. Cet outil est à but informatif uniquement. Consultez des professionnels pour tout conseil médical ou esthétique.</span>
       </div>
+      <button type="button" class="btn btn-tips-chat hidden" id="btn-open-tips-chat" aria-label="Get precise tips"><span class="btn-tips-icon">💬</span> <span id="btn-tips-label">Precise tips</span></button>
     </section>
   </div>
+  </div>
+
+  <div id="tips-chat-overlay" class="tips-chat-overlay hidden" aria-hidden="true">
+    <div class="tips-chat-panel" id="tips-chat-panel">
+      <div class="tips-chat-header">
+        <h3 id="tips-chat-title">Tips for improving</h3>
+        <button type="button" class="tips-chat-close" id="tips-chat-close" aria-label="Close">×</button>
+      </div>
+      <div class="tips-chat-messages" id="tips-chat-messages"></div>
+      <div class="tips-chat-input-wrap">
+        <input type="text" class="tips-chat-input" id="tips-chat-input" placeholder="Ask for precise tips..." maxlength="500" />
+        <button type="button" class="btn tips-chat-send" id="tips-chat-send">Send</button>
+      </div>
+    </div>
   </div>
 
   <div id="auth-modal-overlay" class="auth-modal-overlay hidden" aria-hidden="true">
@@ -1559,7 +1592,8 @@
     landmarkConfirmStep: 'idle',
     landmarkConfirmIndex: 0,
     manualSideStep: 0,
-    manualSidePoints: null
+    manualSidePoints: null,
+    lastAnalysisSummary: null
   };
 
   // ——— Frankfort plane: align so porion-orbitale (or tragus-orbitale) is horizontal ———
@@ -2674,6 +2708,55 @@
 
     document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
     if (plan === 'full' || plan === 'pro') showPromoCard(scoreSur10, imgF, imgS);
+    state.lastAnalysisSummary = { score: score, scoreSur10: scoreSur10, strengths: strengths, improvements: improvements, actionPlan: actionPlan };
+    var btnTips = document.getElementById('btn-open-tips-chat');
+    var tipsLabel = document.getElementById('btn-tips-label');
+    if (btnTips) btnTips.classList.remove('hidden');
+    if (tipsLabel) tipsLabel.textContent = (typeof currentLang !== 'undefined' && currentLang === 'fr') ? 'Conseils précis' : 'Precise tips';
+  }
+
+  function getTipsChatResponse(summary, userMsg) {
+    if (!summary || !summary.strengths) {
+      return (typeof currentLang !== 'undefined' && currentLang === 'fr')
+        ? 'Lancez d’abord une analyse pour obtenir des conseils personnalisés basés sur vos mesures.'
+        : 'Run an analysis first to get personalized tips based on your measurements.';
+    }
+    var isFr = (typeof currentLang !== 'undefined' && currentLang === 'fr');
+    var m = (userMsg || '').toLowerCase();
+    var out = [];
+    if (/\b(improve|améliorer|tips|conseils|precise|précis|specific|what to do|que faire)\b/.test(m) || /\b(help|aide)\b/.test(m)) {
+      if (summary.improvements && summary.improvements.length) {
+        out.push(isFr ? '**Axes d’amélioration (basés sur votre analyse) :**' : '**Areas to improve (from your analysis):**');
+        summary.improvements.forEach(function(i) { out.push('• ' + i); });
+      }
+      if (summary.actionPlan && summary.actionPlan.length) {
+        out.push('');
+        out.push(isFr ? '**Actions concrètes :**' : '**Concrete steps:**');
+        summary.actionPlan.forEach(function(p) { out.push('• ' + p); });
+      }
+    }
+    if (/\b(strength|fort|point fort)\b/.test(m) && summary.strengths && summary.strengths.length) {
+      out.push(isFr ? '**Vos points forts :**' : '**Your strengths:**');
+      summary.strengths.forEach(function(s) { out.push('• ' + s); });
+    }
+    if (/\b(score|note)\b/.test(m)) {
+      var s = summary.scoreSur10 != null ? summary.scoreSur10.toFixed(1) : '—';
+      out.push((isFr ? 'Votre score d’harmonie : ' : 'Your harmony score: ') + s + ' / 10.');
+    }
+    if (out.length === 0) {
+      out.push(isFr ? 'Voici un résumé personnalisé selon votre analyse :' : 'Here’s a summary based on your analysis:');
+      if (summary.strengths && summary.strengths.length) {
+        out.push(isFr ? '**Points forts :**' : '**Strengths:**');
+        summary.strengths.slice(0, 3).forEach(function(s) { out.push('• ' + s); });
+      }
+      if (summary.improvements && summary.improvements.length) {
+        out.push(isFr ? '**À travailler :**' : '**To improve:**');
+        summary.improvements.slice(0, 3).forEach(function(i) { out.push('• ' + i); });
+      }
+      if (summary.actionPlan && summary.actionPlan.length)
+        out.push(isFr ? 'Demandez « conseils précis » ou « improve » pour la liste détaillée.' : 'Ask "precise tips" or "improve" for the full list.');
+    }
+    return out.join('\n').replace(/\*\*/g, '');
   }
 
   function runAnalysis() {
@@ -2800,6 +2883,62 @@
     e.preventDefault();
     alert('Key landmarks: Trichion (forehead), Glabella (between brows), Nasion (nose bridge), Pronasale (nose tip), Subnasale (below nose), Labiale superius/inferius (lips), Stomion (mouth center), Pogonion/Menton (chin), Zygion (cheeks), Tragus (ear), Orbitale (eye bottom). Drag points on the canvas to refine.');
   });
+
+  (function initTipsChat() {
+    var overlay = document.getElementById('tips-chat-overlay');
+    var panel = document.getElementById('tips-chat-panel');
+    var messagesEl = document.getElementById('tips-chat-messages');
+    var inputEl = document.getElementById('tips-chat-input');
+    var sendBtn = document.getElementById('tips-chat-send');
+    var closeBtn = document.getElementById('tips-chat-close');
+    var openBtn = document.getElementById('btn-open-tips-chat');
+    var titleEl = document.getElementById('tips-chat-title');
+    var isFr = (typeof currentLang !== 'undefined' && currentLang === 'fr');
+    function setChatLabels() {
+      isFr = (typeof currentLang !== 'undefined' && currentLang === 'fr');
+      if (titleEl) titleEl.textContent = isFr ? 'Conseils pour améliorer' : 'Tips for improving';
+      if (inputEl) inputEl.placeholder = isFr ? 'Posez une question pour des conseils précis...' : 'Ask for precise tips...';
+      if (sendBtn) sendBtn.textContent = isFr ? 'Envoyer' : 'Send';
+    }
+    function addMessage(text, role) {
+      var div = document.createElement('div');
+      div.className = 'tips-msg ' + (role === 'user' ? 'user' : 'bot');
+      div.textContent = text;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+    function openChat() {
+      if (!overlay) return;
+      setChatLabels();
+      overlay.classList.remove('hidden');
+      if (messagesEl.children.length === 0) {
+        var welcome = isFr
+          ? 'Posez une question pour des conseils personnalisés (ex: "comment améliorer mon profil ?", "mes points forts", "conseils précis").'
+          : 'Ask a question for personalized tips (e.g. "how to improve my profile?", "my strengths", "precise tips").';
+        addMessage(welcome, 'bot');
+      }
+      if (inputEl) inputEl.focus();
+    }
+    function closeChat() {
+      if (overlay) overlay.classList.add('hidden');
+    }
+    function sendMessage() {
+      var text = (inputEl && inputEl.value) ? inputEl.value.trim() : '';
+      if (!text) return;
+      addMessage(text, 'user');
+      if (inputEl) inputEl.value = '';
+      var summary = state.lastAnalysisSummary;
+      var reply = getTipsChatResponse(summary, text);
+      setTimeout(function() { addMessage(reply, 'bot'); }, 300);
+    }
+    if (openBtn) openBtn.addEventListener('click', openChat);
+    if (closeBtn) closeBtn.addEventListener('click', closeChat);
+    if (overlay) overlay.addEventListener('click', function(e) { if (e.target === overlay) closeChat(); });
+    if (panel) panel.addEventListener('click', function(e) { e.stopPropagation(); });
+    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+    if (inputEl) inputEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+  })();
+
   setupUpload();
 
   // Service worker for offline (caches page + CDN libs after first load)
